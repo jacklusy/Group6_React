@@ -13,9 +13,8 @@ function Navbar() {
               </div>
             </div>
 
-            <a href="../dashboard/index.html">
-              <img src="/images/logo.png" className="img-fluid" alt="" />
-              <span>SocialV</span>
+            <a href="/">
+              <img src="/images/logo3.png" className="img-fluid" alt="" />
             </a>
             
           </div>
