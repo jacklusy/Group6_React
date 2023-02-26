@@ -1,6 +1,16 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const LeftSidebar = () => {
+  const navigate = useNavigate();
+  const handleClick=()=>{
+    localStorage.clear();
+    toast.success('successfully logout 🙁')
+    navigate('/')
+}
   return (
     <div className="iq-sidebar  sidebar-default ">
           <div id="sidebar-scrollbar">
@@ -27,9 +37,9 @@ const LeftSidebar = () => {
                   <a href="/Chat" ><i className="ri-pages-line" /><span>Friends</span><i className="ri-arrow-right-s-line iq-arrow-right" /></a>
                 </li>
 
-                <li className=" ">
-                  <a href="#" className=" ">
-                    <i className="ri-login-box-line" /><span>Logout</span>
+                <li className=" " onClick={handleClick}>
+                  <a  className>
+                    <i className="ri-login-box-line"  /><span>Logout</span>
                   </a>
                 </li>
                 
