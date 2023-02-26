@@ -28,6 +28,8 @@ import './assets/vendor/remixicon/fonts/remixicon.css';
 import './assets/vendor/vanillajs-datepicker/dist/css/datepicker.min.css';
 import './assets/vendor/line-awesome/dist/font-awesome-line-awesome/css/all.min.css';
 import './assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css';
+import Login from "./components/main/Login";
+import Register from "./components/main/Register";
 //import Login from "./components/main/Login";
 
 
@@ -38,7 +40,10 @@ const App = () => {
       <Router>
 
         <Routes>
-          <Route exact path="/" element={<Index />} />
+          <Route exact path="/home" element={<Index />} />
+
+          <Route exact path="/" element={<Login />} />
+          <Route exact path="/Register" element={<Register />} />
 
           <Route exact path="/Profile" element={<Profile />} />
           <Route exact path="/EditProfile" element={<EditProfile />} />
