@@ -1,7 +1,17 @@
 import React from 'react'
+import Footer from '../body/Footer';
+import LeftSidebar from '../body/LeftSidebar';
+import Navbar from '../body/Navbar';
+import RightSidebar from '../body/RightSidebar';
 
 const GroupDetails = () => {
     return (
+        <>
+
+        <Navbar />
+
+        <RightSidebar/>
+        <LeftSidebar />
         <div>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -646,6 +656,9 @@ const GroupDetails = () => {
             </div>
             
         </div>
+        <Footer /> 
+
+        </>
       );
 }
 

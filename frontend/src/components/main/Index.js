@@ -1,7 +1,15 @@
 import React from 'react'
-
+import Navbar from '../body/Navbar';
+import LeftSidebar from '../body/LeftSidebar';
+import Footer from '../body/Footer';
+import RightSidebar from '../body/RightSidebar';
 const Index = () => {
     return (
+        <>
+        <Navbar />
+
+        <RightSidebar/>
+        <LeftSidebar />
         <div>
             <meta charSet="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -1231,6 +1239,10 @@ const Index = () => {
                 </div>
             </div>
         </div>
+        <Footer /> 
+
+        </>
+
       );
 }
 
