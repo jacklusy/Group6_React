@@ -1,6 +1,7 @@
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Link, Switch, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 
 ///////////////// body ///////////////
@@ -37,6 +38,18 @@ import Register from "./components/main/Register";
 const App = () => {
   return (
     <>
+    <ToastContainer
+position="top-center"
+autoClose={2000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+>
+</ToastContainer>
       <Router>
 
         <Routes>
