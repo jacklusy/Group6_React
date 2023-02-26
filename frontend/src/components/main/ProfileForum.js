@@ -1,8 +1,16 @@
 import React from 'react'
+import Footer from '../body/Footer';
+import LeftSidebar from '../body/LeftSidebar';
+import Navbar from '../body/Navbar';
+import RightSidebar from '../body/RightSidebar';
 
 const ProfileForum = () => {
     return (
-        <div>
+        <>
+          <Navbar />
+
+            <RightSidebar/>
+            <LeftSidebar />
             <div className="wrapper">
                 <div id="content-page" className="content-page">
                 <div className="container">
@@ -704,7 +712,9 @@ const ProfileForum = () => {
                 </div>
                 </div>
             </div>
-        </div>
+            <Footer /> 
+
+        </>
       );
 }
 
