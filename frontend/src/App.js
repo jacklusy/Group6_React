@@ -1,6 +1,7 @@
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { ToastContainer } from "react-toastify";
 
 
 ///////////////// body ///////////////
@@ -32,7 +33,7 @@ import './assets/vendor/line-awesome/dist/font-awesome-line-awesome/css/all.min.
 import './assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css';
 import Login from "./components/main/Login";
 import Register from "./components/main/Register";
-//import Login from "./components/main/Login";
+// import Login from "./components/main/Login";
 
 
 
