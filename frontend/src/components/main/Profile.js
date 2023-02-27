@@ -6,7 +6,7 @@ import RightSidebar from '../body/RightSidebar';
 
 const Profile = () => {
     return (
-        <>
+        <div>
         <Navbar />
 
         <RightSidebar/>
@@ -4035,7 +4035,7 @@ const Profile = () => {
          
         </div>
         <Footer /> 
-        </>
+        </div>
       );
 }
 

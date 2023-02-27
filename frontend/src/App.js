@@ -39,21 +39,20 @@ import Register from "./components/main/Register";
 const App = () => {
   
   return (
-    <>
 
-      {/* <ToastContainer
-        position="top-center"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        // pauseOnFocusLoss
-        // draggable
-        // pauseOnHover
-      >
-      </ToastContainer> */}
-
+    <div>
+    <ToastContainer
+position="top-center"
+autoClose={2000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+>
+</ToastContainer>
 
       <Router>
 
@@ -65,7 +64,7 @@ const App = () => {
           <Route exact path="/Register" element={<Register />} />
 
           <Route exact path="/Profile" element={<Profile />} />
-          <Route exact path="/EditProfile" element={<EditProfile />} />
+          <Route exact path="/EditProfile/:id/edit" element={<EditProfile />} />
           <Route exact path="/ProfileForum" element={<ProfileForum />} />
 
           <Route exact path="/Group" element={<Group />} />
@@ -77,8 +76,8 @@ const App = () => {
 
         </Routes>
       </Router>
-    </>
-  )
+    </div>
+  );
 }
 
 export default App
