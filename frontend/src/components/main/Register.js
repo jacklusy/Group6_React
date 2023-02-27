@@ -1,7 +1,7 @@
 import React , { useState }  from 'react'
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -82,11 +82,11 @@ const Register = () => {
 
 
                 <div className="col-md-6 bg-white pt-5 pt-5 pb-lg-0 pb-5">
-                  <div className="sign-in-from">
+                  <div style={{paddingTop: '3rem'}} className="sign-in-from  ">
 
 
                     <h1 className="mb-0">Sign Up</h1>
-                    <p>Sign Up To See Photos & Posts From Your Friends.</p>
+                    {/* <p>Sign Up To See Photos & Posts From Your Friends.</p> */}
 
 
                     <form className="mt-4">
