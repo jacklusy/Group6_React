@@ -23,7 +23,7 @@ const Index = () => {
 
     const [file, setFile] = useState(null);
 
-
+console.log(posts);
     useEffect(() => {
         getPosts();
         getComments();
@@ -49,9 +49,7 @@ const Index = () => {
         formData.append("user_id", current_ID);
         formData.append("file", file);
         try {
-            const response = await axios.post(
-                "http://localhost/React/Group6_React/backend/posts.php/", formData
-            );
+            const response = await axios.post("http://localhost/React/Group6_React/backend/posts.php/", formData);
             console.log(response.data);
             // window.location.assign('/');
         } catch (error) {
@@ -119,8 +117,6 @@ const Index = () => {
     // Comments
 
 
-
-
     function getComments() {
         axios.get(`http://localhost/React/Group6_React/backend/comments.php/`)
             .then(response => {
@@ -132,7 +128,7 @@ const Index = () => {
         e.preventDefault();
         console.log(inputs)
         axios.post('http://localhost/React/Group6_React/backend/comments.php/', inputs).then(
-            window.location.assign('/')
+            window.location.assign('/home')
         )
     }
 
@@ -157,7 +153,7 @@ const Index = () => {
     const handleEditCommentSubmit = (e) => {
         e.preventDefault();
         axios.put('http://localhost/React/Group6_React/backend/comments.php/', inputs).then(
-            window.location.assign('/')
+            // window.location.assign('/')
         )
     }
 
@@ -276,8 +272,9 @@ const Index = () => {
                                                             <div className="d-flex justify-content-between">
                                                                 {/* POST USER IMAGE */}
                                                                 <div className="me-3">
-                                                                    
-                                                                    <img className="rounded-circle img-fluid" width={'60px'} src={require(`../images/${post.image}`)} alt="" />
+                                                                    {post.image != null ?
+                                                                        <img className="rounded-circle img-fluid" width={'60px'} src={require(`../images/${post.image}`)} alt="" />
+                                                                        : "dd"}
                                                                 </div>
                                                                 <div className="w-100">
                                                                     <div className="d-flex justify-content-between">
