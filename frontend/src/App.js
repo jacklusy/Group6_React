@@ -40,7 +40,8 @@ const App = () => {
   
   return (
     <>
-      <ToastContainer
+
+      {/* <ToastContainer
         position="top-center"
         autoClose={2000}
         hideProgressBar={false}
@@ -51,7 +52,7 @@ const App = () => {
         // draggable
         // pauseOnHover
       >
-      </ToastContainer>
+      </ToastContainer> */}
 
 
       <Router>
