@@ -1,1249 +1,821 @@
 import React from 'react'
+import { useState, useEffect, useParams } from 'react';
+import axios from 'axios';
+import { AiOutlineLike, AiOutlineComment, AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import Navbar from '../body/Navbar';
+import RightSidebar from '../body/RightSidebar';
 import LeftSidebar from '../body/LeftSidebar';
 import Footer from '../body/Footer';
-import RightSidebar from '../body/RightSidebar';
+
+
 const Index = () => {
+
+    const current_Fname = JSON.parse(localStorage.getItem('first_name'));
+    const current_Lname = JSON.parse(localStorage.getItem('last_name'));
+    const current_ID = JSON.parse(localStorage.getItem('Id'));
+    const current_Email = JSON.parse(localStorage.getItem('email'));
+
+
+    const [inputs, setInputs] = useState("")
+    const [posts, setPosts] = useState([]);
+    const [likes , setLikes] = useState([]);
+    const [comments, setComments] = useState([]);
+    const [file, setFile] = useState(null);
+
+
+    useEffect(() => {
+        getPosts();
+        getComments();
+    }, [])
+
+
+    // Posts
+
+
+    function getPosts() {
+        axios.get(`http://localhost/Group6_React/backend/posts.php/`)
+            .then(response => {
+                setPosts(response.data);
+                getComments();
+                getLikes();
+            })
+    }
+
+    const handleImagePost = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+
+        formData.append("post", inputs);
+        formData.append("user_id", current_ID);
+        formData.append("file", file);
+        try {
+            const response = await axios.post(
+                "http://localhost/Group6_React/backend/posts.php/", formData
+            );
+            console.log(response.data);
+            // window.location.assign('/');
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handlePost = (e) => {
+        const value = e.target.value;
+        setInputs(value)
+    }
+
+    const handleChange = (e) => {
+        const value = e.target.value;
+        const post_id = e.target.id;
+        const user_id = e.target.name;
+        setInputs({ 'comment_content': value, 'post_id': post_id, 'user_id': user_id })
+    }
+
+
+
+    const editPost = (id) => {
+        document.getElementById(`post${id}`).style.display = 'none';
+        document.getElementById(`editPostForm${id}`).style.display = 'block';
+        document.getElementById(`editPostBTN${id}`).style.display = 'none';
+    }
+
+    const handleEditPost = (id) => {
+        const post_id = id;
+        const value = document.getElementById(`editPostInput${id}`).value;
+        setInputs({ 'post_content': value, 'post_id': post_id })
+    }
+
+    const handleEditPostSubmit = async (e) => {
+        e.preventDefault();
+
+        const formEditData = new FormData();
+
+        formEditData.append("post_content", inputs['post_content']);
+        formEditData.append("post_id", inputs['post_id']);
+        formEditData.append("file", file);
+
+        console.log(formEditData);
+
+        try {
+            const response = await axios.post(
+                "http://localhost/Group6_React/backend/postEdit.php/", formEditData
+            );
+            console.log(response.data);
+            window.location.assign('/home');
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+
+
+    const deletePost = (id) => {
+        axios.delete(`http://localhost/Group6_React/backend/posts.php/${id}`).then(function (response) {
+            window.location.assign('/home');
+        })
+    }
+
+
+    // Comments
+
+
+
+
+    function getComments() {
+        axios.get(`http://localhost/Group6_React/backend/comments.php/`)
+            .then(response => {
+                setComments(response.data);
+            })
+    }
+
+    const handleCreateComment = (e) => {
+        e.preventDefault();
+        console.log(inputs)
+        axios.post('http://localhost/Group6_React/backend/comments.php/', inputs).then(
+            window.location.assign('/home')
+        )
+    }
+
+    const deleteComment = (id) => {
+        axios.delete(`http://localhost/Group6_React/backend/comments.php/${id}`).then(function (response) {
+            getComments();
+        })
+    }
+
+    const editComment = (id) => {
+        document.getElementById(`comment${id}`).style.display = 'none';
+        document.getElementById(`editCommentForm${id}`).style.display = 'block';
+        document.getElementById(`editCommentBTN${id}`).style.display = 'none';
+    }
+
+    const handleEditComment = (id) => {
+        const comment_id = id;
+        const value = document.getElementById(`editCommentInput${id}`).value;
+        setInputs({ 'comment_content': value, 'comment_id': comment_id })
+    }
+
+    const handleEditCommentSubmit = (e) => {
+        e.preventDefault();
+        axios.put('http://localhost/Group6_React/backend/comments.php/', inputs).then(
+            window.location.assign('/')
+        )
+    }
+
+    const foucsOnComment = (id) => {
+        document.getElementById(id).focus();
+    }
+
+    const canclePostEdit = (id) => {
+        document.getElementById(`post${id}`).style.display = 'block';
+        document.getElementById(`editPostForm${id}`).style.display = 'none';
+        document.getElementById(`editPostBTN${id}`).style.display = 'inline-block';
+        document.getElementById(`imgPost${id}`).style.display = 'block';
+    }
+
+    const cancleCommentEdit = (id) => {
+        document.getElementById(`comment${id}`).style.display = 'block';
+        document.getElementById(`editCommentForm${id}`).style.display = 'none';
+        document.getElementById(`editCommentBTN${id}`).style.display = 'inline-block';
+
+    }
+
+    // Likes
+
+
+    const getLikes = () => {
+        axios.get(`http://localhost/Group6_React/backend/likes.php/`)
+        .then(response => {
+            setLikes(response.data);
+        })
+      }
+  
+      const handleLikePost = (id) => {
+        const post_id = id;
+        const user_id = current_ID;
+        setInputs({'user_id': user_id , 'post_id' : post_id})
+      }
+  
+      const likePost = (e) => {
+        e.preventDefault();
+        console.log(inputs)
+          axios.post('http://localhost/Group6_React/backend/likes.php/' , inputs).then(
+            getPosts()
+          )
+      }
+      const removeLikePost = (e) => {
+        e.preventDefault();
+        console.log(inputs)
+          axios.post('http://localhost/Group6_React/backend/likeDelete.php/' , inputs).then(
+            getPosts()
+          )
+      }
+  
+      // Return
     return (
         <>
-        <Navbar />
 
-        <RightSidebar/>
-        <LeftSidebar />
-        <div>
-            <meta charSet="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-            <title>Posts</title>
-          
-            <div className="wrapper">
-                <div id="content-page" className="content-page">
-                    <div className="container">
-                        <div className="row">
-                        <div className="col-lg-8 row m-0 p-0">
-                            <div className="col-sm-12">
-                            <div id="post-modal-data" className="card card-block card-stretch card-height">
-                                <div className="card-header d-flex justify-content-between">
-                                <div className="header-title">
-                                    <h4 className="card-title">Create Post</h4>
-                                </div>
-                                </div>
-                                <div className="card-body">
-                                <div className="d-flex align-items-center">
-                                    <div className="user-img">
-                                    <img src="/images/user/1.jpg" alt="userimg" className="avatar-60 rounded-circle" />
-                                    </div>
-                                    <form className="post-text ms-3 w-100 " data-bs-toggle="modal" data-bs-target="#post-modal" action="javascript:void();">
-                                    <input type="text" className="form-control rounded" placeholder="Write something here..." style={{border: 'none'}} />
-                                    </form>
-                                </div>
-                                <hr />
-                                <ul className=" post-opt-block d-flex list-inline m-0 p-0 flex-wrap">
-                                    <li className="me-3 mb-md-0 mb-2">
-                                    <a href="#" className="btn btn-soft-primary">
-                                        <img src="/images/small/07.png" alt="icon" className="img-fluid me-2" /> Photo/Video
-                                    </a>
-                                    </li>
-                                    <li className="me-3 mb-md-0 mb-2">
-                                    <a href="#" className="btn btn-soft-primary">
-                                        <img src="/images/small/08.png" alt="icon" className="img-fluid me-2" /> Tag Friend
-                                    </a>
-                                    </li>
-                                    <li className="me-3">
-                                    <a href="#" className="btn btn-soft-primary">
-                                        <img src="/images/small/09.png" alt="icon" className="img-fluid me-2" /> Feeling/Activity
-                                    </a>
-                                    </li>
-                                    <li>
-                                    <button className="btn btn-soft-primary">
-                                        <div className="card-header-toolbar d-flex align-items-center">
-                                        <div className="dropdown">
-                                            <div className="dropdown-toggle" id="post-option" data-bs-toggle="dropdown">
-                                            <i className="ri-more-fill" />
+            <Navbar />
+
+            <RightSidebar />
+            <LeftSidebar />
+            <div>
+                <meta charSet="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+                <title>Posts</title>
+
+                <div className="wrapper">
+                    <div id="content-page" className="content-page">
+                        <div className="container">
+                            <div className="row">
+                                <div className="col-lg-8 row m-0 p-0">
+                                    <div className="col-sm-12">
+                                        {/* POST FORM */}
+                                        <form id="post-modal-data" onSubmit={handleImagePost} className="card card-block card-stretch ">
+                                            <div className="card-header d-flex justify-content-between">
+                                                <div className="header-title">
+                                                    <h4 className="card-title">Create Post</h4>
+                                                </div>
                                             </div>
-                                            <div className="dropdown-menu dropdown-menu-right" aria-labelledby="post-option" style={{}}>
-                                            <a className="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#post-modal">Check in</a>
-                                            <a className="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#post-modal">Live Video</a>
-                                            <a className="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#post-modal">Gif</a>
-                                            <a className="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#post-modal">Watch Party</a>
-                                            <a className="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#post-modal">Play with Friend</a>
+                                            <div className="card-body">
+                                                <div className="d-flex align-items-center">
+                                                    <div className="user-img">
+                                                        <img src="/images/user/1.jpg" alt="userimg" className="avatar-60 rounded-circle" />
+                                                    </div>
+                                                    <div
+                                                        className="post-text ms-3 w-100 "
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#post-modal"
+                                                    >
+                                                        <input
+                                                            type="text"
+                                                            className="form-control rounded"
+                                                            id={current_ID}
+                                                            placeholder="Write something here..."
+                                                            style={{ border: 'none' }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <hr />
                                             </div>
-                                        </div>
-                                        </div>
-                                    </button>
-                                    </li>
-                                </ul>
-                                </div>
-                                <div className="modal fade" id="post-modal" tabIndex={-1} aria-labelledby="post-modalLabel" aria-hidden="true">
-                                <div className="modal-dialog   modal-fullscreen-sm-down">
-                                    <div className="modal-content">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title" id="post-modalLabel">Create Post</h5>
-                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal"><i className="ri-close-fill" /></button>
-                                    </div>
-                                    <div className="modal-body">
-                                        <div className="d-flex align-items-center">
-                                        <div className="user-img">
-                                            <img src="/images/user/1.jpg" alt="userimg" className="avatar-60 rounded-circle img-fluid" />
-                                        </div>
-                                        <form className="post-text ms-3 w-100" action="javascript:void();">
-                                            <input type="text" className="form-control rounded" placeholder="Write something here..." style={{border: 'none'}} />
+                                            <div className="modal fade" id="post-modal" tabIndex={-1} aria-labelledby="post-modalLabel" aria-hidden="true">
+                                                <div className="modal-dialog   modal-fullscreen-sm-down">
+                                                    <div className="modal-content">
+                                                        <div className="modal-header">
+                                                            <h5 className="modal-title" id="post-modalLabel">Create Post</h5>
+                                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal"><i className="ri-close-fill" /></button>
+                                                        </div>
+                                                        <div className="modal-body">
+                                                            <div className="d-flex align-items-center">
+                                                                <div className="user-img">
+                                                                    <img src="/images/user/1.jpg" alt="userimg" className="avatar-60 rounded-circle img-fluid" />
+                                                                </div>
+                                                                <div className="post-text ms-3 w-100">
+                                                                    <input
+                                                                        type="text"
+                                                                        className="form-control rounded"
+                                                                        id={current_ID}
+                                                                        placeholder="Write something here..."
+                                                                        style={{ border: 'none' }}
+                                                                        onChange={handlePost}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                            <hr />
+                                                            <ul className="d-flex flex-wrap align-items-center list-inline m-0 p-0">
+                                                                <li className="me-3 mb-md-0 mb-2">
+                                                                    <input
+                                                                        type='file'
+                                                                        id="file"
+                                                                        accept="image/*"
+                                                                        onChange={(e) => setFile(e.target.files[0])}
+                                                                    />
+                                                                </li>
+                                                            </ul>
+                                                            <hr />
+                                                            <button type="submit" className="btn btn-primary d-block w-100 mt-3">Post</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </form>
-                                        </div>
-                                        <hr />
-                                        <ul className="d-flex flex-wrap align-items-center list-inline m-0 p-0">
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/07.png" alt="icon" className="img-fluid" /> Photo/Video</div>
-                                        </li>
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/08.png" alt="icon" className="img-fluid" /> Tag Friend</div>
-                                        </li>
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/09.png" alt="icon" className="img-fluid" /> Feeling/Activity</div>
-                                        </li>
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/10.png" alt="icon" className="img-fluid" /> Check in</div>
-                                        </li>
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/11.png" alt="icon" className="img-fluid" /> Live Video</div>
-                                        </li>
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/12.png" alt="icon" className="img-fluid" /> Gif</div>
-                                        </li>
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/13.png" alt="icon" className="img-fluid" /> Watch Party</div>
-                                        </li>
-                                        <li className="col-md-6 mb-3">
-                                            <div className="bg-soft-primary rounded p-2 pointer me-3"><a href="#" /><img src="/images/small/14.png" alt="icon" className="img-fluid" /> Play with Friends</div>
-                                        </li>
-                                        </ul>
-                                        <hr />
-                                        <div className="other-option">
-                                        <div className="d-flex align-items-center justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                            <div className="user-img me-3">
-                                                <img src="/images/user/1.jpg" alt="userimg" className="avatar-60 rounded-circle img-fluid" />
-                                            </div>
-                                            <h6>Your Story</h6>
-                                            </div>
-                                            <div className="card-post-toolbar">
-                                            <div className="dropdown">
-                                                <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <span className="btn btn-primary">Friend</span>
-                                                </span>
-                                                <div className="dropdown-menu m-0 p-0">
-                                                <a className="dropdown-item p-3" href="#">
-                                                    <div className="d-flex align-items-top">
-                                                    <i className="ri-save-line h4" />
-                                                    <div className="data ms-2">
-                                                        <h6>Public</h6>
-                                                        <p className="mb-0">Anyone on or off Facebook</p>
-                                                    </div>
-                                                    </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                    <div className="d-flex align-items-top">
-                                                    <i className="ri-close-circle-line h4" />
-                                                    <div className="data ms-2">
-                                                        <h6>Friends</h6>
-                                                        <p className="mb-0">Your Friend on facebook</p>
-                                                    </div>
-                                                    </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                    <div className="d-flex align-items-top">
-                                                    <i className="ri-user-unfollow-line h4" />
-                                                    <div className="data ms-2">
-                                                        <h6>Friends except</h6>
-                                                        <p className="mb-0">Don't show to some friends</p>
-                                                    </div>
-                                                    </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                    <div className="d-flex align-items-top">
-                                                    <i className="ri-notification-line h4" />
-                                                    <div className="data ms-2">
-                                                        <h6>Only Me</h6>
-                                                        <p className="mb-0">Only me</p>
-                                                    </div>
-                                                    </div>
-                                                </a>
-                                                </div>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        <button type="submit" className="btn btn-primary d-block w-100 mt-3">Post</button>
                                     </div>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            <div className="col-sm-12">
-                            <div className="card card-block card-stretch card-height">
-                                <div className="card-body">
-                                <div className="user-post-data">
-                                    <div className="d-flex justify-content-between">
-                                    <div className="me-3">
-                                        <img className="rounded-circle img-fluid" src="/images/user/01.jpg" alt="" />
-                                    </div>
-                                    <div className="w-100">
-                                        <div className="d-flex justify-content-between">
-                                        <div className>
-                                            <h5 className="mb-0 d-inline-block">Anna Sthesia</h5>
-                                            <span className="mb-0 d-inline-block">Add New Post</span>
-                                            <p className="mb-0 text-primary">Just Now</p>
-                                        </div>
-                                        <div className="card-post-toolbar">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <i className="ri-more-fill" />
-                                            </span>
-                                            <div className="dropdown-menu m-0 p-0">
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <div className="h4">
-                                                    <i className="ri-save-line" />
-                                                    </div>
-                                                    <div className="data ms-2">
-                                                    <h6>Save Post</h6>
-                                                    <p className="mb-0">Add this to your saved items</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-close-circle-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Hide Post</h6>
-                                                    <p className="mb-0">See fewer posts like this.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-user-unfollow-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Unfollow User</h6>
-                                                    <p className="mb-0">Stop seeing posts but stay friends.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-notification-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Notifications</h6>
-                                                    <p className="mb-0">Turn on notifications for this post</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                                <div className="mt-3">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nulla dolor, ornare at commodo non, feugiat non nisi. Phasellus faucibus mollis pharetra. Proin blandit ac massa sed rhoncus</p>
-                                </div>
-                                <div className="user-post">
-                                    <div className=" d-grid grid-rows-2 grid-flow-col gap-3">
-                                    <div className="row-span-2 row-span-md-1">
-                                        <img src="/images/page-img/p2.jpg" alt="post-image" className="img-fluid rounded w-100" />
-                                    </div>
-                                    <div className="row-span-1">
-                                        <img src="/images/page-img/p1.jpg" alt="post-image" className="img-fluid rounded w-100" />
-                                    </div>
-                                    <div className="row-span-1 ">
-                                        <img src="/images/page-img/p3.jpg" alt="post-image" className="img-fluid rounded w-100" />
-                                    </div>
-                                    </div>
-                                </div>
-                                <div className="comment-area mt-3">
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                    <div className="like-block position-relative d-flex align-items-center">
-                                        <div className="d-flex align-items-center">
-                                        <div className="like-data">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <img src="/images/icon/01.png" className="img-fluid" alt="" />
-                                            </span>
-                                            <div className="dropdown-menu py-2">
-                                                <a className="ms-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Like"><img src="/images/icon/01.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Love"><img src="/images/icon/02.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Happy"><img src="/images/icon/03.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="HaHa"><img src="/images/icon/04.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Think"><img src="/images/icon/05.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Sade"><img src="/images/icon/06.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Lovely"><img src="/images/icon/07.png" className="img-fluid" alt="" /></a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <div className="total-like-block ms-2 me-3">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                140 Likes
-                                            </span>
-                                            <div className="dropdown-menu">
-                                                <a className="dropdown-item" href="#">Max Emum</a>
-                                                <a className="dropdown-item" href="#">Bill Yerds</a>
-                                                <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                                <a className="dropdown-item" href="#">Tara Misu</a>
-                                                <a className="dropdown-item" href="#">Midge Itz</a>
-                                                <a className="dropdown-item" href="#">Sal Vidge</a>
-                                                <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        <div className="total-comment-block">
-                                        <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                            20 Comment
-                                            </span>
-                                            <div className="dropdown-menu">
-                                            <a className="dropdown-item" href="#">Max Emum</a>
-                                            <a className="dropdown-item" href="#">Bill Yerds</a>
-                                            <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                            <a className="dropdown-item" href="#">Tara Misu</a>
-                                            <a className="dropdown-item" href="#">Midge Itz</a>
-                                            <a className="dropdown-item" href="#">Sal Vidge</a>
-                                            <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div className="share-block d-flex align-items-center feather-icon mt-2 mt-md-0">
-                                        <a href="javascript:void();" data-bs-toggle="offcanvas" data-bs-target="#share-btn" aria-controls="share-btn"><i className="ri-share-line" />
-                                        <span className="ms-1">99 Share</span></a>                           
-                                    </div>
-                                    </div>
-                                    <hr />
-                                    <ul className="post-comments list-inline p-0 m-0">
-                                    <li className="mb-2">
-                                        <div className="d-flex">
-                                        <div className="user-img">
-                                            <img src="/images/user/02.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Monty Carlo</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="d-flex">
-                                        <div className="user-img">
-                                            <img src="/images/user/03.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Paul Molive</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    </ul>
-                                    <form className="comment-text d-flex align-items-center mt-3" action="javascript:void(0);">
-                                    <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                    <div className="comment-attagement d-flex">
-                                        <a href="javascript:void();"><i className="ri-link me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-user-smile-line me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-camera-line me-3" /></a>
-                                    </div>
-                                    </form>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            <div className="col-sm-12">
-                            <div className="card card-block card-stretch card-height">
-                                <div className="card-body">
-                                <div className="user-post-data">
-                                    <div className="d-flex justify-content-between">
-                                    <div className="me-3">
-                                        <img className="rounded-circle img-fluid" src="/images/user/03.jpg" alt="" />
-                                    </div>
-                                    <div className="w-100">
-                                        <div className="d-flex  justify-content-between">
-                                        <div className>
-                                            <h5 className="mb-0 d-inline-block">Barb Ackue</h5>
-                                            <span className="mb-0 d-inline-block">Added New Image in a Post</span>
-                                            <p className="mb-0 text-primary">1 hour ago</p>
-                                        </div>
-                                        <div className="card-post-toolbar">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" id="postdata-5" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <i className="ri-more-fill" />
-                                            </span>
-                                            <div className="dropdown-menu m-0 p-0" aria-labelledby="postdata-5">
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-save-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Save Post</h6>
-                                                    <p className="mb-0">Add this to your saved items</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-close-circle-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Hide Post</h6>
-                                                    <p className="mb-0">See fewer posts like this.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-user-unfollow-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Unfollow User</h6>
-                                                    <p className="mb-0">Stop seeing posts but stay friends.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-notification-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Notifications</h6>
-                                                    <p className="mb-0">Turn on notifications for this post</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                                <div className="mt-3">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nulla dolor, ornare at commodo non, feugiat non nisi. Phasellus faucibus mollis pharetra. Proin blandit ac massa sed rhoncus</p>
-                                </div>
-                                <div className="user-post">
-                                    <a href="javascript:void();"><img src="/images/page-img/p4.jpg" alt="post-image" className="img-fluid rounded w-100" /></a>
-                                </div>
-                                <div className="comment-area mt-3">
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                    <div className="like-block position-relative d-flex align-items-center">
-                                        <div className="d-flex align-items-center">
-                                        <div className="like-data">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <img src="/images/icon/01.png" className="img-fluid" alt="" />
-                                            </span>
-                                            <div className="dropdown-menu py-2">
-                                                <a className="ms-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Like"><img src="/images/icon/01.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Love"><img src="/images/icon/02.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Happy"><img src="/images/icon/03.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="HaHa"><img src="/images/icon/04.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Think"><img src="/images/icon/05.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Sade"><img src="/images/icon/06.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Lovely"><img src="/images/icon/07.png" className="img-fluid" alt="" /></a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <div className="total-like-block ms-2 me-3">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                140 Likes
-                                            </span>
-                                            <div className="dropdown-menu">
-                                                <a className="dropdown-item" href="#">Max Emum</a>
-                                                <a className="dropdown-item" href="#">Bill Yerds</a>
-                                                <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                                <a className="dropdown-item" href="#">Tara Misu</a>
-                                                <a className="dropdown-item" href="#">Midge Itz</a>
-                                                <a className="dropdown-item" href="#">Sal Vidge</a>
-                                                <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        <div className="total-comment-block">
-                                        <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                            20 Comment
-                                            </span>
-                                            <div className="dropdown-menu">
-                                            <a className="dropdown-item" href="#">Max Emum</a>
-                                            <a className="dropdown-item" href="#">Bill Yerds</a>
-                                            <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                            <a className="dropdown-item" href="#">Tara Misu</a>
-                                            <a className="dropdown-item" href="#">Midge Itz</a>
-                                            <a className="dropdown-item" href="#">Sal Vidge</a>
-                                            <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div className="share-block d-flex align-items-center feather-icon mt-2 mt-md-0">
-                                        <a href="javascript:void();" data-bs-toggle="offcanvas" data-bs-target="#share-btn" aria-controls="share-btn"><i className="ri-share-line" />
-                                        <span className="ms-1">99 Share</span></a>
-                                    </div>
-                                    </div>
-                                    <hr />
-                                    <ul className="post-comments list-inline p-0 m-0">
-                                    <li className="mb-2">
-                                        <div className="d-flex ">
-                                        <div className="user-img">
-                                            <img src="/images/user/02.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Monty Carlo</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="d-flex ">
-                                        <div className="user-img">
-                                            <img src="/images/user/03.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Paul Molive</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    </ul>
-                                    <form className="comment-text d-flex align-items-center mt-3" action="javascript:void(0);">
-                                    <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                    <div className="comment-attagement d-flex">
-                                        <a href="javascript:void();"><i className="ri-link me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-user-smile-line me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-camera-line me-3" /></a>
-                                    </div>
-                                    </form>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            <div className="col-sm-12">
-                            <div className="card card-block card-stretch card-height">
-                                <div className="card-body">
-                                <div className="user-post-data">
-                                    <div className="d-flex justify-content-between">
-                                    <div className="me-3">
-                                        <img className="rounded-circle img-fluid" src="/images/user/04.jpg" alt="" />
-                                    </div>
-                                    <div className="w-100">
-                                        <div className=" d-flex  justify-content-between">
-                                        <div className>
-                                            <h5 className="mb-0 d-inline-block">Ira Membrit</h5>
-                                            <p className="mb-0 d-inline-block">Update her Status</p>
-                                            <p className="mb-0 text-primary">6 hour ago</p>
-                                        </div>
-                                        <div className="card-post-toolbar">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <i className="ri-more-fill" />
-                                            </span>
-                                            <div className="dropdown-menu m-0 p-0">
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-save-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Save Post</h6>
-                                                    <p className="mb-0">Add this to your saved items</p>
+                                    <div className="col-sm-12">
+                                        {/* ALL POSTS */}
+                                        {posts.map((post, index_post) => {
+                                            var flagLike = false;
+                                            return (
+                                                <div className="card card-block card-stretch" key={index_post}>
+                                                    <div className="card-body">
+                                                        <div className="user-post-data">
+                                                            <div className="d-flex justify-content-between">
+                                                                {/* POST USER IMAGE */}
+                                                                <div className="me-3">
+                                                                    <img className="rounded-circle img-fluid" width={'60px'} src={require(`../images/${post.post_image}`)} alt="" />
+                                                                </div>
+                                                                <div className="w-100">
+                                                                    <div className="d-flex justify-content-between">
+                                                                        <div>
+                                                                            <h5 className="mb-0 d-inline-block">{post.first_name}</h5>
+                                                                            <p className="mb-0 text-primary">{post.created_at}</p>
+                                                                        </div>
+                                                                        {(post.user_id == current_ID) ?
+                                                                            <div className="card-post-toolbar">
+                                                                                <div className="dropdown">
+                                                                                    <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+                                                                                        <i className="ri-more-fill" />
+                                                                                    </span>
+                                                                                    <div className="dropdown-menu m-0 p-0">
+                                                                                        <a className="dropdown-item p-3" href="#">
+                                                                                            <button className="d-flex text-start  border-0 bg-transparent" onClick={() => { deletePost(post.post_id) }}>
+                                                                                                <AiOutlineDelete className='fs-4' />
+                                                                                                <div className="data ms-2">
+                                                                                                    <h6>Delete</h6>
+                                                                                                </div>
+                                                                                            </button>
+                                                                                        </a>
+                                                                                        <a className="dropdown-item p-3" href="#">
+                                                                                            <button className="d-flex text-start align-items-top border-0 bg-transparent" id={`editPostBTN${post.post_id}`} onClick={() => { editPost(post.post_id) }}>
+                                                                                                <AiOutlineEdit className='fs-4' />
+                                                                                                <div className="data ms-2">
+                                                                                                    <h6>Edit</h6>
+                                                                                                </div>
+                                                                                            </button>
+                                                                                        </a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            : null}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {(post.post_image != 'a') ?
+                                                            <>
+                                                                {/* CONTENT POST */}
+                                                                <div className="mt-3">
+                                                                    <p id={`post${post.post_id}`} className="mt-3 mb-4 pb-2">{post.content}</p>
+                                                                </div>
+                                                                {/* EDIT POST */}
+                                                                <div className="user-post">
+                                                                    <div className=" d-grid grid-rows-2 grid-flow-col gap-3">
+                                                                        <form className="card card-block card-stretch" id={`editPostForm${post.post_id}`} action="" style={{ display: 'none' }} onSubmit={handleEditPostSubmit}>
+                                                                            <textarea
+                                                                                className="form-control rounded"
+                                                                                type="text"
+                                                                                defaultValue={post.content}
+                                                                                id={`editPostInput${post.post_id}`} onChange={() => handleEditPost(post.post_id)}
+                                                                            />
+
+                                                                            <br />
+
+                                                                            <div className='w-100 d-flex'>
+                                                                                <input
+                                                                                    type="file"
+                                                                                    id="file"
+                                                                                    onChange={(e) => setFile(e.target.files[0])}
+                                                                                />
+                                                                                <button className='btn btn-outline-secondary border w-25 me-2' type='submit'>Update</button>
+                                                                                <button className="btn btn-primary w-25" onClick={() => { canclePostEdit(post.post_id) }} type='button'>Cancle</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                                {/* IMAGE POST */}
+                                                                <div className="row-span-2 row-span-md-1 justify-content-center">
+                                                                    <hr />
+                                                                    <img id={`imgPost${post.post_id}`}  className="img-thumnail rounded w-100" src={require(`../images/${post.post_image}`)} alt='' />
+                                                                </div>
+                                                            </>
+                                                            :
+                                                            // POPUP FORM POST
+                                                            <div>
+                                                                <form id="post-modal-data" onSubmit={handleImagePost} className="card card-block card-stretch">
+                                                                    <div className="card-header d-flex justify-content-between">
+                                                                        <div className="header-title">
+                                                                            <h4 className="card-title">Create Post</h4>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="card-body">
+                                                                        <div className="d-flex align-items-center">
+                                                                            <div className="user-img">
+                                                                                <img src="/images/user/1.jpg" alt="userimg" className="avatar-60 rounded-circle" />
+                                                                            </div>
+                                                                            <div className="post-text ms-3 w-100 " data-bs-toggle="modal" data-bs-target="#post-modal">
+                                                                                <input
+                                                                                    type="text"
+                                                                                    className="form-control rounded"
+                                                                                    id={current_ID}
+                                                                                    placeholder="Write something here..."
+                                                                                    style={{ border: 'none' }}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                        <hr />
+                                                                    </div>
+                                                                    <div className="modal fade" id="post-modal" tabIndex={-1} aria-labelledby="post-modalLabel" aria-hidden="true">
+                                                                        <div className="modal-dialog   modal-fullscreen-sm-down">
+                                                                            <div className="modal-content">
+                                                                                <div className="modal-header">
+                                                                                    <h5 className="modal-title" id="post-modalLabel">Create Post</h5>
+                                                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal"><i className="ri-close-fill" /></button>
+                                                                                </div>
+                                                                                <div className="modal-body">
+                                                                                    <div className="d-flex align-items-center">
+                                                                                        <div className="post-text ms-3 w-100">
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                className="form-control rounded"
+                                                                                                id={current_ID}
+                                                                                                placeholder="Write something here..."
+                                                                                                style={{ border: 'none' }}
+                                                                                                onChange={handlePost}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <hr />
+                                                                                    <ul className="d-flex flex-wrap align-items-center list-inline m-0 p-0">
+                                                                                        <li className="me-3 mb-md-0 mb-2">
+                                                                                            <input
+                                                                                                type='file'
+                                                                                                id="file"
+                                                                                                accept="image/*"
+                                                                                                onChange={(e) => setFile(e.target.files[0])}
+                                                                                            />
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                    <hr />
+                                                                                    <button type="submit" className="btn btn-primary d-block w-100 mt-3">Post</button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+
+                                                        }
+                                                        {/* LIKE AND COMMENT ICON */}
+                                                   
+                                                    <div className="comment-area mt-3"> 
+                                                    
+                                                        <>
+                                                            <div className="d-flex justify-content-between align-items-center flex-wrap">
+                                                                <div className="like-block position-relative d-flex align-items-center">
+                                                                    <div className="d-flex align-items-center">
+                                                                        <div className="like-data">
+                                                                            <div className="dropdown">
+                                                                                {/* BUTTON LIKE */}
+                                                                                {likes.map((like , index_like) => {
+                                                                                if (like.user_id == current_ID && like.post_id == post.post_id){
+                                                                                return ( flagLike = true )
+                                                                                }})}
+
+                                                                                {( flagLike == true ) ?
+                                                                                <form action="" onSubmit={removeLikePost}>
+                                                                                    <button className='border-0 bg-transparent' onClick={()=>handleLikePost(post.post_id)}>
+                                                                                        <AiOutlineLike className='fs-3 text-light' />
+                                                                                        <p className="mb-0" style={{color : 'blue' , fontWeight : 'bold'}}>Liked</p>
+                                                                                        {/* LIKE NUMBER */}
+                                                                                    </button>
+                                                                                </form>
+                                                                                :
+                                                                                <form action=""  onSubmit={likePost}>
+                                                                                    <button className='border-0 bg-transparent'  onClick={()=>handleLikePost(post.post_id)}>
+                                                                                        <AiOutlineLike className='fs-3 text-light' />
+                                                                                        <p className="mb-0" >Like</p>
+                                                                                        {/* LIKE NUMBER */}
+                                                                                    </button>
+                                                                                </form>
+                                                                                 }
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="d-flex align-items-center">
+                                                                        <div className="like-data">
+                                                                            <div className="dropdown">
+                                                                                {/* BUTTON COMMENT */}
+                                                                                <button className='border-0 bg-transparent' onClick={() => foucsOnComment(post.post_id)}>
+                                                                                    <AiOutlineComment className='fs-3 text-light' />
+                                                                                    {/* COMMENT NUMBER */}
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            </>
+                                                       
+                                                                <hr />
+                                                            {/* COMMENT CONTAINER */}
+                                                            { comments.map((comment,index_comment) => {
+                                                                    if (comment.post_id == post.post_id){
+                                                                    return (
+                                                                        <div className="card card-block card-stretch" key={index_comment}>
+                                                                            <div className="card-body">
+                                                                                <div className="user-post-data">
+                                                                                    <div className="d-flex justify-content-between">
+                                                                                        <div className="me-2">
+                                                                                            <img src="/images/user/02.jpg" width={'60px'} alt="userimg" className="rounded-circle img-fluid" />
+                                                                                        </div>
+                                                                                        <div className="w-100">
+                                                                                            <div className="d-flex justify-content-between">
+                                                                                                <div className='mt-1'>
+                                                                                                    <h5 className="mb-0 d-inline-block">{comment.first_name}</h5>
+                                                                                                    <p className="mb-0 text-primary" style={{ fontSize: '8px' }}>{comment.comment_created_at}</p>
+                                                                                                </div>
+                                                                                                {/* TOOLS COMMENT  */}
+                                                                                                {(comment.user_id == current_ID) ?
+                                                                                                    <div className="card-post-toolbar">
+                                                                                                        <div className="dropdown">
+                                                                                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+                                                                                                                <i className="ri-more-fill" />
+                                                                                                            </span>
+                                                                                                            <div className="dropdown-menu m-0 p-0">
+                                                                                                                <a className="dropdown-item p-3" href="#">
+                                                                                                                    <button
+                                                                                                                        className="d-flex text-start  border-0 bg-transparent"
+                                                                                                                        onClick={() => { deleteComment(comment.comment_id) }}
+                                                                                                                    >
+                                                                                                                        <AiOutlineDelete className='fs-4' />
+                                                                                                                        <div className="data ms-2">
+                                                                                                                            <h6>Delete</h6>
+                                                                                                                        </div>
+                                                                                                                    </button>
+                                                                                                                </a>
+                                                                                                                <a className="dropdown-item p-3" href="#">
+                                                                                                                    <button
+                                                                                                                        className="d-flex text-start align-items-top border-0 bg-transparent"
+                                                                                                                        id={`editCommentBTN${comment.comment_id}`}
+                                                                                                                        onClick={() => { editComment(comment.comment_id) }}
+                                                                                                                    >
+                                                                                                                        <AiOutlineEdit className='fs-4' />
+                                                                                                                        <div className="data ms-2">
+                                                                                                                            <h6>Edit</h6>
+                                                                                                                        </div>
+                                                                                                                    </button>
+                                                                                                                </a>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    : (post.user_id == current_ID) ?
+                                                                                                        <div className="card-post-toolbar">
+                                                                                                            <div className="dropdown">
+                                                                                                                <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+                                                                                                                    <i className="ri-more-fill" />
+                                                                                                                </span>
+                                                                                                                <div className="dropdown-menu m-0 p-0">
+                                                                                                                    <a className="dropdown-item p-3" href="#">
+                                                                                                                        <button
+                                                                                                                            className="d-flex text-start  border-0 bg-transparent"
+                                                                                                                            onClick={() => { deleteComment(comment.comment_id) }}
+                                                                                                                        >
+                                                                                                                            <AiOutlineDelete className='fs-4' />
+                                                                                                                            <div className="data ms-2">
+                                                                                                                                <h6>Delete</h6>
+                                                                                                                            </div>
+                                                                                                                        </button>
+                                                                                                                    </a>
+                                                                                                                    <a className="dropdown-item p-3" href="#">
+                                                                                                                        <button
+                                                                                                                            className="d-flex text-start align-items-top border-0 bg-transparent"
+                                                                                                                            id={`editCommentBTN${comment.comment_id}`}
+                                                                                                                            onClick={() => { editComment(comment.comment_id) }}
+                                                                                                                        >
+                                                                                                                            <AiOutlineEdit className='fs-4' />
+                                                                                                                            <div className="data ms-2">
+                                                                                                                                <h6>Edit</h6>
+                                                                                                                            </div>
+                                                                                                                        </button>
+                                                                                                                    </a>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        : null}
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        {/* COMMENT CONTENT */}
+                                                                                    </div>
+                                                                                    {/* EDIT COMMENT */}
+                                                                                    <div className="comment-data-block ms-3">
+                                                                                        <div className="comment-data-block ms-3">
+                                                                                            <div className="mt-3">
+                                                                                                <p className="mb-0" id={`comment${comment.comment_id}`}>{comment.comment_content}</p>
+                                                                                            </div>
+                                                                                            <div className="d-flex flex-wrap align-items-center comment-activity border-top">
+                                                                                                <p className='text-primary-emphasis m-1'>like</p>
+                                                                                                <p className='text-primary-emphasis m-1'>reply</p>
+
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <form
+                                                                                    className="comment-text mb-3"
+                                                                                    id={`editCommentForm${comment.comment_id}`}
+                                                                                    action=""
+                                                                                    style={{ display: 'none' }}
+                                                                                    onSubmit={handleEditCommentSubmit}
+                                                                                >
+                                                                                    {/* COMMENT INPUT */}
+                                                                                    <div className='row'>
+                                                                                        <div className='col-lg-8'>
+                                                                                            <input className='form-control' type="text" defaultValue={comment.comment_content} id={`editCommentInput${comment.comment_id}`} onChange={() => handleEditComment(comment.comment_id)} />
+                                                                                        </div>
+                                                                                        <div className='col-lg-3'>
+                                                                                            <div className='d-flex'>
+                                                                                                <button type='submit' className='btn btn-outline-secondary border'>Update</button>
+                                                                                                <button onClick={() => { cancleCommentEdit(comment.comment_id) }} className='btn btn-outline-secondary border' type='button'>Comment</button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    )
+                                                                }
+                                                            })}
+                                                            <form className="comment-text d-flex align-items-center mb-3 " onSubmit={handleCreateComment}>
+                                                                {/* COMMENT INPUT */}
+                                                                <div className='col-lg-10'>
+                                                                    <input type="text" id={post.post_id} name={current_ID} className="form-control rounded" placeholder="Enter Your Comment" onChange={handleChange} />
+                                                                </div>
+                                                                <div className='col-lg-2'>
+                                                                    <button type='submit' className='btn btn-outline-secondary border'>Comment</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-close-circle-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Hide Post</h6>
-                                                    <p className="mb-0">See fewer posts like this.</p>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                                <div className="col-lg-4">
+                                    <div className="card">
+                                        <div className="card-header d-flex justify-content-between">
+                                            <div className="header-title">
+                                                <h4 className="card-title">Stories</h4>
+                                            </div>
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="media-story list-inline m-0 p-0">
+                                                <li className="d-flex mb-3 align-items-center">
+                                                    <i className="ri-add-line" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Creat Your Story</h5>
+                                                        <p className="mb-0">time to story</p>
+                                                    </div>
+                                                </li>
+                                                <li className="d-flex mb-3 align-items-center active">
+                                                    <img src="/images/page-img/s2.jpg" alt="story-img" className="rounded-circle img-fluid" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Anna Mull</h5>
+                                                        <p className="mb-0">1 hour ago</p>
+                                                    </div>
+                                                </li>
+                                                <li className="d-flex mb-3 align-items-center">
+                                                    <img src="/images/page-img/s3.jpg" alt="story-img" className="rounded-circle img-fluid" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Ira Membrit</h5>
+                                                        <p className="mb-0">4 hour ago</p>
+                                                    </div>
+                                                </li>
+                                                <li className="d-flex align-items-center">
+                                                    <img src="/images/page-img/s1.jpg" alt="story-img" className="rounded-circle img-fluid" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Bob Frapples</h5>
+                                                        <p className="mb-0">9 hour ago</p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                            <a href="#" className="btn btn-primary d-block mt-3">See All</a>
+                                        </div>
+                                    </div>
+                                    <div className="card">
+                                        <div className="card-header d-flex justify-content-between">
+                                            <div className="header-title">
+                                                <h4 className="card-title">Events</h4>
+                                            </div>
+                                            <div className="card-header-toolbar d-flex align-items-center">
+                                                <div className="dropdown">
+                                                    <div className="dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                                        <i className="ri-more-fill h4" />
+                                                    </div>
+                                                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style={{}}>
+                                                        <a className="dropdown-item" href="#"><i className="ri-eye-fill me-2" />View</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-delete-bin-6-fill me-2" />Delete</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-pencil-fill me-2" />Edit</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-printer-fill me-2" />Print</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-file-download-fill me-2" />Download</a>
                                                     </div>
                                                 </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-user-unfollow-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Unfollow User</h6>
-                                                    <p className="mb-0">Stop seeing posts but stay friends.</p>
+                                            </div>
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="media-story list-inline m-0 p-0">
+                                                <li className="d-flex mb-4 align-items-center ">
+                                                    <img src="/images/page-img/s4.jpg" alt="story-img" className="rounded-circle img-fluid" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Web Workshop</h5>
+                                                        <p className="mb-0">1 hour ago</p>
+                                                    </div>
+                                                </li>
+                                                <li className="d-flex align-items-center">
+                                                    <img src="/images/page-img/s5.jpg" alt="story-img" className="rounded-circle img-fluid" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Fun Events and Festivals</h5>
+                                                        <p className="mb-0">1 hour ago</p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="card">
+                                        <div className="card-header d-flex justify-content-between">
+                                            <div className="header-title">
+                                                <h4 className="card-title">Upcoming Birthday</h4>
+                                            </div>
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="media-story list-inline m-0 p-0">
+                                                <li className="d-flex mb-4 align-items-center">
+                                                    <img src="/images/user/01.jpg" alt="story-img" className="rounded-circle img-fluid" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Anna Sthesia</h5>
+                                                        <p className="mb-0">Today</p>
+                                                    </div>
+                                                </li>
+                                                <li className="d-flex align-items-center">
+                                                    <img src="/images/user/02.jpg" alt="story-img" className="rounded-circle img-fluid" />
+                                                    <div className="stories-data ms-3">
+                                                        <h5>Paul Molive</h5>
+                                                        <p className="mb-0">Tomorrow</p>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="card">
+                                        <div className="card-header d-flex justify-content-between">
+                                            <div className="header-title">
+                                                <h4 className="card-title">Suggested Pages</h4>
+                                            </div>
+                                            <div className="card-header-toolbar d-flex align-items-center">
+                                                <div className="dropdown">
+                                                    <div className="dropdown-toggle" id="dropdownMenuButton01" data-bs-toggle="dropdown" aria-expanded="false" role="button">
+                                                        <i className="ri-more-fill h4" />
+                                                    </div>
+                                                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton01">
+                                                        <a className="dropdown-item" href="#"><i className="ri-eye-fill me-2" />View</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-delete-bin-6-fill me-2" />Delete</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-pencil-fill me-2" />Edit</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-printer-fill me-2" />Print</a>
+                                                        <a className="dropdown-item" href="#"><i className="ri-file-download-fill me-2" />Download</a>
                                                     </div>
                                                 </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-notification-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Notifications</h6>
-                                                    <p className="mb-0">Turn on notifications for this post</p>
+                                            </div>
+                                        </div>
+                                        <div className="card-body">
+                                            <ul className="suggested-page-story m-0 p-0 list-inline">
+                                                <li className="mb-3">
+                                                    <div className="d-flex align-items-center mb-3">
+                                                        <img src="/images/page-img/42.png" alt="story-img" className="rounded-circle img-fluid avatar-50" />
+                                                        <div className="stories-data ms-3">
+                                                            <h5>Iqonic Studio</h5>
+                                                            <p className="mb-0">Lorem Ipsum</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                </a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                                <div className="mt-3">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nulla dolor, ornare at commodo non, feugiat non nisi. Phasellus faucibus mollis pharetra. Proin blandit ac massa sed rhoncus</p>
-                                </div>
-                                <div className="comment-area mt-3">
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                    <div className="like-block position-relative d-flex align-items-center">
-                                        <div className="d-flex align-items-center">
-                                        <div className="like-data">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <img src="/images/icon/01.png" className="img-fluid" alt="" />
-                                            </span>
-                                            <div className="dropdown-menu py-2">
-                                                <a className="ms-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Like"><img src="/images/icon/01.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Love"><img src="/images/icon/02.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Happy"><img src="/images/icon/03.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="HaHa"><img src="/images/icon/04.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Think"><img src="/images/icon/05.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Sade"><img src="/images/icon/06.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Lovely"><img src="/images/icon/07.png" className="img-fluid" alt="" /></a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <div className="total-like-block ms-2 me-3">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                140 Likes
-                                            </span>
-                                            <div className="dropdown-menu">
-                                                <a className="dropdown-item" href="#">Max Emum</a>
-                                                <a className="dropdown-item" href="#">Bill Yerds</a>
-                                                <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                                <a className="dropdown-item" href="#">Tara Misu</a>
-                                                <a className="dropdown-item" href="#">Midge Itz</a>
-                                                <a className="dropdown-item" href="#">Sal Vidge</a>
-                                                <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        <div className="total-comment-block">
-                                        <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                            20 Comment
-                                            </span>
-                                            <div className="dropdown-menu">
-                                            <a className="dropdown-item" href="#">Max Emum</a>
-                                            <a className="dropdown-item" href="#">Bill Yerds</a>
-                                            <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                            <a className="dropdown-item" href="#">Tara Misu</a>
-                                            <a className="dropdown-item" href="#">Midge Itz</a>
-                                            <a className="dropdown-item" href="#">Sal Vidge</a>
-                                            <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div className="share-block d-flex align-items-center feather-icon mt-2 mt-md-0">
-                                        <a href="javascript:void();" data-bs-toggle="offcanvas" data-bs-target="#share-btn" aria-controls="share-btn"><i className="ri-share-line" />
-                                        <span className="ms-1">99 Share</span></a>
-                                    </div>
-                                    </div>
-                                    <hr />
-                                    <ul className="post-comments list-inline p-0 m-0">
-                                    <li className="mb-2">
-                                        <div className="d-flex">
-                                        <div className="user-img">
-                                            <img src="/images/user/02.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Monty Carlo</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="d-flex ">
-                                        <div className="user-img">
-                                            <img src="/images/user/03.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Paul Molive</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    </ul>
-                                    <form className="comment-text d-flex align-items-center mt-3" action="javascript:void(0);">
-                                    <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                    <div className="comment-attagement d-flex">
-                                        <a href="javascript:void();"><i className="ri-link me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-user-smile-line me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-camera-line me-3" /></a>
-                                    </div>
-                                    </form>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            <div className="col-sm-12">
-                            <div className="card card-block card-stretch card-height">
-                                <div className="card-body">
-                                <div className="post-item">
-                                    <div className="d-flex justify-content-between">
-                                    <div className="me-3">
-                                        <img className="rounded-circle img-fluid avatar-60" src="/images/user/1.jpg" alt="" />
-                                    </div>
-                                    <div className="w-100">
-                                        <div className="d-flex justify-content-between">
-                                        <div className>
-                                            <h5 className="mb-0 d-inline-block">Bni Cyst</h5>
-                                            <p className="ms-1 mb-0 d-inline-block">Changed Profile Picture</p>
-                                            <p className="mb-0">3 day ago</p>
-                                        </div>
-                                        <div className="card-post-toolbar">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <i className="ri-more-fill" />
-                                            </span>
-                                            <div className="dropdown-menu m-0 p-0">
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-save-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Save Post</h6>
-                                                    <p className="mb-0">Add this to your saved items</p>
+                                                    <img src="/images/small/img-1.jpg" className="img-fluid rounded" alt="Responsive image" />
+                                                    <div className="mt-3"><a href="#" className="btn d-block"><i className="ri-thumb-up-line me-2" /> Like Page</a></div>
+                                                </li>
+                                                <li className>
+                                                    <div className="d-flex align-items-center mb-3">
+                                                        <img src="/images/page-img/42.png" alt="story-img" className="rounded-circle img-fluid avatar-50" />
+                                                        <div className="stories-data ms-3">
+                                                            <h5>Cakes &amp; Bakes </h5>
+                                                            <p className="mb-0">Lorem Ipsum</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-close-circle-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Hide Post</h6>
-                                                    <p className="mb-0">See fewer posts like this.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-user-unfollow-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Unfollow User</h6>
-                                                    <p className="mb-0">Stop seeing posts but stay friends.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-notification-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Notifications</h6>
-                                                    <p className="mb-0">Turn on notifications for this post</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                            </div>
-                                            </div>
+                                                    <img src="/images/small/img-2.jpg" className="img-fluid rounded" alt="Responsive image" />
+                                                    <div className="mt-3"><a href="#" className="btn d-block"><i className="ri-thumb-up-line me-2" /> Like Page</a></div>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        </div>
-                                    </div>
                                     </div>
                                 </div>
-                                <div className="user-post text-center">
-                                    <a href="javascript:void();"><img src="/images/page-img/p5.jpg" alt="post-image" className="img-fluid rounded w-100 mt-3" /></a>
-                                </div>
-                                <div className="comment-area mt-3">
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                    <div className="like-block position-relative d-flex align-items-center">
-                                        <div className="d-flex align-items-center">
-                                        <div className="like-data">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <img src="/images/icon/01.png" className="img-fluid" alt="" />
-                                            </span>
-                                            <div className="dropdown-menu py-2">
-                                                <a className="ms-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Like"><img src="/images/icon/01.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Love"><img src="/images/icon/02.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Happy"><img src="/images/icon/03.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="HaHa"><img src="/images/icon/04.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Think"><img src="/images/icon/05.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Sade"><img src="/images/icon/06.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Lovely"><img src="/images/icon/07.png" className="img-fluid" alt="" /></a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <div className="total-like-block ms-2 me-3">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                140 Likes
-                                            </span>
-                                            <div className="dropdown-menu">
-                                                <a className="dropdown-item" href="#">Max Emum</a>
-                                                <a className="dropdown-item" href="#">Bill Yerds</a>
-                                                <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                                <a className="dropdown-item" href="#">Tara Misu</a>
-                                                <a className="dropdown-item" href="#">Midge Itz</a>
-                                                <a className="dropdown-item" href="#">Sal Vidge</a>
-                                                <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        <div className="total-comment-block">
-                                        <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                            20 Comment
-                                            </span>
-                                            <div className="dropdown-menu">
-                                            <a className="dropdown-item" href="#">Max Emum</a>
-                                            <a className="dropdown-item" href="#">Bill Yerds</a>
-                                            <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                            <a className="dropdown-item" href="#">Tara Misu</a>
-                                            <a className="dropdown-item" href="#">Midge Itz</a>
-                                            <a className="dropdown-item" href="#">Sal Vidge</a>
-                                            <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div className="share-block d-flex align-items-center feather-icon mt-2 mt-md-0">
-                                        <a href="javascript:void();" data-bs-toggle="offcanvas" data-bs-target="#share-btn" aria-controls="share-btn"><i className="ri-share-line" />
-                                        <span className="ms-1">99 Share</span></a>
-                                    </div>
-                                    </div>
-                                    <hr />
-                                    <ul className="post-comments list-inline p-0 m-0">
-                                    <li className="mb-2">
-                                        <div className="d-flex">
-                                        <div className="user-img">
-                                            <img src="/images/user/02.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Monty Carlo</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="d-flex">
-                                        <div className="user-img">
-                                            <img src="/images/user/03.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Paul Molive</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    </ul>
-                                    <form className="comment-text d-flex align-items-center mt-3" action="javascript:void(0);">
-                                    <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                    <div className="comment-attagement d-flex">
-                                        <a href="javascript:void();"><i className="ri-link me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-user-smile-line me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-camera-line me-3" /></a>
-                                    </div>
-                                    </form>
-                                </div>
+                                <div className="col-sm-12 text-center">
+                                    <img src="/images/page-img/page-load-loader.gif" alt="loader" style={{ height: '100px' }} />
                                 </div>
                             </div>
-                            </div>
-                            <div className="col-sm-12">
-                            <div className="card card-block card-stretch card-height">
-                                <div className="card-body">
-                                <div className="user-post-data">
-                                    <div className="d-flex justify-content-between">
-                                    <div className="me-3">
-                                        <img className="rounded-circle img-fluid" src="/images/user/02.jpg" alt="" />
-                                    </div>
-                                    <div className="w-100">
-                                        <div className="d-flex justify-content-between">
-                                        <div className>
-                                            <h5 className="mb-0 d-inline-block">Paige Turner</h5>
-                                            <p className="mb-0 d-inline-block">Added New Video in his Timeline</p>
-                                            <p className="mb-0 text-primary">1 day ago</p>
-                                        </div>
-                                        <div className="card-post-toolbar">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <i className="ri-more-fill" />
-                                            </span>
-                                            <div className="dropdown-menu m-0 p-0">
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-save-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Save Post</h6>
-                                                    <p className="mb-0">Add this to your saved items</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-close-circle-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Hide Post</h6>
-                                                    <p className="mb-0">See fewer posts like this.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-user-unfollow-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Unfollow User</h6>
-                                                    <p className="mb-0">Stop seeing posts but stay friends.</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                                <a className="dropdown-item p-3" href="#">
-                                                <div className="d-flex align-items-top">
-                                                    <i className="ri-notification-line h4" />
-                                                    <div className="data ms-2">
-                                                    <h6>Notifications</h6>
-                                                    <p className="mb-0">Turn on notifications for this post</p>
-                                                    </div>
-                                                </div>
-                                                </a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-                                <div className="mt-3">
-                                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi nulla dolor, ornare at commodo non, feugiat non nisi. Phasellus faucibus mollis pharetra. Proin blandit ac massa sed rhoncus</p>
-                                </div>
-                                <div className="user-post">
-                                    <div className="ratio ratio-16x9">
-                                    <iframe src="https://www.youtube.com/embed/j_GsIanLxZk?rel=0" allowFullScreen />
-                                    </div>
-                                </div>
-                                <div className="comment-area mt-3">
-                                    <div className="d-flex justify-content-between align-items-center flex-wrap">
-                                    <div className="like-block position-relative d-flex align-items-center">
-                                        <div className="d-flex align-items-center">
-                                        <div className="like-data">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                <img src="/images/icon/01.png" className="img-fluid" alt="" />
-                                            </span>
-                                            <div className="dropdown-menu py-2">
-                                                <a className="ms-2 me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Like"><img src="/images/icon/01.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Love"><img src="/images/icon/02.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Happy"><img src="/images/icon/03.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="HaHa"><img src="/images/icon/04.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Think"><img src="/images/icon/05.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Sade"><img src="/images/icon/06.png" className="img-fluid" alt="" /></a>
-                                                <a className="me-2" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Lovely"><img src="/images/icon/07.png" className="img-fluid" alt="" /></a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        <div className="total-like-block ms-2 me-3">
-                                            <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                                140 Likes
-                                            </span>
-                                            <div className="dropdown-menu">
-                                                <a className="dropdown-item" href="#">Max Emum</a>
-                                                <a className="dropdown-item" href="#">Bill Yerds</a>
-                                                <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                                <a className="dropdown-item" href="#">Tara Misu</a>
-                                                <a className="dropdown-item" href="#">Midge Itz</a>
-                                                <a className="dropdown-item" href="#">Sal Vidge</a>
-                                                <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                        <div className="total-comment-block">
-                                        <div className="dropdown">
-                                            <span className="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
-                                            20 Comment
-                                            </span>
-                                            <div className="dropdown-menu">
-                                            <a className="dropdown-item" href="#">Max Emum</a>
-                                            <a className="dropdown-item" href="#">Bill Yerds</a>
-                                            <a className="dropdown-item" href="#">Hap E. Birthday</a>
-                                            <a className="dropdown-item" href="#">Tara Misu</a>
-                                            <a className="dropdown-item" href="#">Midge Itz</a>
-                                            <a className="dropdown-item" href="#">Sal Vidge</a>
-                                            <a className="dropdown-item" href="#">Other</a>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div className="share-block d-flex align-items-center feather-icon mt-2 mt-md-0">
-                                        <a href="javascript:void();" data-bs-toggle="offcanvas" data-bs-target="#share-btn" aria-controls="share-btn"><i className="ri-share-line" />
-                                        <span className="ms-1">99 Share</span></a>
-                                    </div>
-                                    </div>
-                                    <hr />
-                                    <ul className="post-comments list-inline p-0 m-0">
-                                    <li className="mb-2">
-                                        <div className="d-flex flex-wrap">
-                                        <div className="user-img">
-                                            <img src="/images/user/02.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Monty Carlo</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div className="d-flex flex-wrap">
-                                        <div className="user-img">
-                                            <img src="/images/user/03.jpg" alt="userimg" className="avatar-35 rounded-circle img-fluid" />
-                                        </div>
-                                        <div className="comment-data-block ms-3">
-                                            <h6>Paul Molive</h6>
-                                            <p className="mb-0">Lorem ipsum dolor sit amet</p>
-                                            <div className="d-flex flex-wrap align-items-center comment-activity">
-                                            <a href="javascript:void();">like</a>
-                                            <a href="javascript:void();">reply</a>
-                                            <a href="javascript:void();">translate</a>
-                                            <span> 5 min </span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </li>
-                                    </ul>
-                                    <form className="comment-text d-flex align-items-center mt-3" action="javascript:void(0);">
-                                    <input type="text" className="form-control rounded" placeholder="Enter Your Comment" />
-                                    <div className="comment-attagement d-flex">
-                                        <a href="javascript:void();"><i className="ri-link me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-user-smile-line me-3" /></a>
-                                        <a href="javascript:void();"><i className="ri-camera-line me-3" /></a>
-                                    </div>
-                                    </form>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="col-lg-4">
-                            <div className="card">
-                            <div className="card-header d-flex justify-content-between">
-                                <div className="header-title">
-                                <h4 className="card-title">Stories</h4>
-                                </div>
-                            </div>
-                            <div className="card-body">
-                                <ul className="media-story list-inline m-0 p-0">
-                                <li className="d-flex mb-3 align-items-center">
-                                    <i className="ri-add-line" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Creat Your Story</h5>
-                                    <p className="mb-0">time to story</p>
-                                    </div>
-                                </li>
-                                <li className="d-flex mb-3 align-items-center active">
-                                    <img src="/images/page-img/s2.jpg" alt="story-img" className="rounded-circle img-fluid" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Anna Mull</h5>
-                                    <p className="mb-0">1 hour ago</p>
-                                    </div>
-                                </li>
-                                <li className="d-flex mb-3 align-items-center">
-                                    <img src="/images/page-img/s3.jpg" alt="story-img" className="rounded-circle img-fluid" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Ira Membrit</h5>
-                                    <p className="mb-0">4 hour ago</p>
-                                    </div>
-                                </li>
-                                <li className="d-flex align-items-center">
-                                    <img src="/images/page-img/s1.jpg" alt="story-img" className="rounded-circle img-fluid" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Bob Frapples</h5>
-                                    <p className="mb-0">9 hour ago</p>
-                                    </div>
-                                </li>
-                                </ul>
-                                <a href="#" className="btn btn-primary d-block mt-3">See All</a>
-                            </div>
-                            </div>
-                            <div className="card">
-                            <div className="card-header d-flex justify-content-between">
-                                <div className="header-title">
-                                <h4 className="card-title">Events</h4>
-                                </div>
-                                <div className="card-header-toolbar d-flex align-items-center">
-                                <div className="dropdown">
-                                    <div className="dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" role="button">
-                                    <i className="ri-more-fill h4" />
-                                    </div>
-                                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton" style={{}}>
-                                    <a className="dropdown-item" href="#"><i className="ri-eye-fill me-2" />View</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-delete-bin-6-fill me-2" />Delete</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-pencil-fill me-2" />Edit</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-printer-fill me-2" />Print</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-file-download-fill me-2" />Download</a>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            <div className="card-body">
-                                <ul className="media-story list-inline m-0 p-0">
-                                <li className="d-flex mb-4 align-items-center ">
-                                    <img src="/images/page-img/s4.jpg" alt="story-img" className="rounded-circle img-fluid" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Web Workshop</h5>
-                                    <p className="mb-0">1 hour ago</p>
-                                    </div>
-                                </li>
-                                <li className="d-flex align-items-center">
-                                    <img src="/images/page-img/s5.jpg" alt="story-img" className="rounded-circle img-fluid" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Fun Events and Festivals</h5>
-                                    <p className="mb-0">1 hour ago</p>
-                                    </div>
-                                </li>
-                                </ul>
-                            </div>
-                            </div>
-                            <div className="card">
-                            <div className="card-header d-flex justify-content-between">
-                                <div className="header-title">
-                                <h4 className="card-title">Upcoming Birthday</h4>
-                                </div>
-                            </div>
-                            <div className="card-body">
-                                <ul className="media-story list-inline m-0 p-0">
-                                <li className="d-flex mb-4 align-items-center">
-                                    <img src="/images/user/01.jpg" alt="story-img" className="rounded-circle img-fluid" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Anna Sthesia</h5>
-                                    <p className="mb-0">Today</p>
-                                    </div>
-                                </li>
-                                <li className="d-flex align-items-center">
-                                    <img src="/images/user/02.jpg" alt="story-img" className="rounded-circle img-fluid" />
-                                    <div className="stories-data ms-3">
-                                    <h5>Paul Molive</h5>
-                                    <p className="mb-0">Tomorrow</p>
-                                    </div>
-                                </li>
-                                </ul>
-                            </div>
-                            </div>
-                            <div className="card">
-                            <div className="card-header d-flex justify-content-between">
-                                <div className="header-title">
-                                <h4 className="card-title">Suggested Pages</h4>
-                                </div>
-                                <div className="card-header-toolbar d-flex align-items-center">
-                                <div className="dropdown">
-                                    <div className="dropdown-toggle" id="dropdownMenuButton01" data-bs-toggle="dropdown" aria-expanded="false" role="button">
-                                    <i className="ri-more-fill h4" />
-                                    </div>
-                                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton01">
-                                    <a className="dropdown-item" href="#"><i className="ri-eye-fill me-2" />View</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-delete-bin-6-fill me-2" />Delete</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-pencil-fill me-2" />Edit</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-printer-fill me-2" />Print</a>
-                                    <a className="dropdown-item" href="#"><i className="ri-file-download-fill me-2" />Download</a>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            <div className="card-body">
-                                <ul className="suggested-page-story m-0 p-0 list-inline">
-                                <li className="mb-3">
-                                    <div className="d-flex align-items-center mb-3">
-                                    <img src="/images/page-img/42.png" alt="story-img" className="rounded-circle img-fluid avatar-50" />
-                                    <div className="stories-data ms-3">
-                                        <h5>Iqonic Studio</h5>
-                                        <p className="mb-0">Lorem Ipsum</p>
-                                    </div>
-                                    </div>
-                                    <img src="/images/small/img-1.jpg" className="img-fluid rounded" alt="Responsive image" />
-                                    <div className="mt-3"><a href="#" className="btn d-block"><i className="ri-thumb-up-line me-2" /> Like Page</a></div>
-                                </li>
-                                <li className>
-                                    <div className="d-flex align-items-center mb-3">
-                                    <img src="/images/page-img/42.png" alt="story-img" className="rounded-circle img-fluid avatar-50" />
-                                    <div className="stories-data ms-3">
-                                        <h5>Cakes &amp; Bakes </h5>
-                                        <p className="mb-0">Lorem Ipsum</p>
-                                    </div>
-                                    </div>
-                                    <img src="/images/small/img-2.jpg" className="img-fluid rounded" alt="Responsive image" />
-                                    <div className="mt-3"><a href="#" className="btn d-block"><i className="ri-thumb-up-line me-2" /> Like Page</a></div>
-                                </li>
-                                </ul>
-                            </div>
-                            </div>
-                        </div>
-                        <div className="col-sm-12 text-center">
-                            <img src="/images/page-img/page-load-loader.gif" alt="loader" style={{height: '100px'}} />
-                        </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <Footer /> 
+            <Footer />
 
         </>
-
-      );
+    )
 }
 
 export default Index

@@ -1,7 +1,6 @@
 import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter as Router, Route, Link, Switch, Routes } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 
 ///////////////// body ///////////////
@@ -15,10 +14,12 @@ import Email from "./components/main/Email";
 import GroupDetails from "./components/main/GroupDetails";
 import ProfileForum from "./components/main/ProfileForum";
 import Index from "./components/main/Index";
+import 'react-toastify/dist/ReactToastify.css';
 ////////
 //import Register from "./components/main/Register";
 // import Test from "./components/main/Test";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -36,7 +37,9 @@ import Register from "./components/main/Register";
 
 
 const App = () => {
+  
   return (
+
     <div>
     <ToastContainer
 position="top-center"
@@ -50,10 +53,12 @@ draggable
 pauseOnHover
 >
 </ToastContainer>
+
       <Router>
 
         <Routes>
-          <Route exact path="/home" element={<Index />} />
+          {/* <Route path="/" element={ isAuthenticated ? <HomePage  /> : <Login />} /> */}
+          <Route exact path="/home" element={<Index/>} />
 
           <Route exact path="/" element={<Login />} />
           <Route exact path="/Register" element={<Register />} />
@@ -67,6 +72,8 @@ pauseOnHover
 
           <Route exact path="/Chat" element={<Chat />} />
           <Route exact path="/Email" element={<Email />} />
+          <Route exact path="*" element={<Login />} />
+
         </Routes>
       </Router>
     </div>
