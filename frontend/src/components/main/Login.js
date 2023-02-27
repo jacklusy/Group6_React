@@ -59,7 +59,7 @@ console.log(users);
 
   const getUser = () => {
 
-    axios.get('http://localhost/React/Group6_React/backend/log_reg.php').then(function (response) {
+    axios.get('http://localhost/Group6_React/backend/log_reg.php').then(function (response) {
       setUsers(response.data)
     })
   }

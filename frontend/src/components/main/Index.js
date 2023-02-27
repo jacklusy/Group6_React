@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useParams } from 'react';
 import axios from 'axios';
 import { AiOutlineLike, AiOutlineComment, AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import Navbar from '../body/Navbar';
@@ -18,9 +18,8 @@ const Index = () => {
 
     const [inputs, setInputs] = useState("")
     const [posts, setPosts] = useState([]);
+    const [likes , setLikes] = useState([]);
     const [comments, setComments] = useState([]);
-
-
     const [file, setFile] = useState(null);
 
 
@@ -34,9 +33,11 @@ const Index = () => {
 
 
     function getPosts() {
-        axios.get(`http://localhost/React/Group6_React/backend/posts.php/`)
+        axios.get(`http://localhost/Group6_React/backend/posts.php/`)
             .then(response => {
                 setPosts(response.data);
+                getComments();
+                getLikes();
             })
     }
 
@@ -50,7 +51,7 @@ const Index = () => {
         formData.append("file", file);
         try {
             const response = await axios.post(
-                "http://localhost/React/Group6_React/backend/posts.php/", formData
+                "http://localhost/Group6_React/backend/posts.php/", formData
             );
             console.log(response.data);
             // window.location.assign('/');
@@ -98,10 +99,10 @@ const Index = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost/React/Group6_React/backend/postEdit.php/", formEditData
+                "http://localhost/Group6_React/backend/postEdit.php/", formEditData
             );
             console.log(response.data);
-            window.location.assign('/');
+            window.location.assign('/home');
         } catch (error) {
             console.error(error);
         }
@@ -110,8 +111,8 @@ const Index = () => {
 
 
     const deletePost = (id) => {
-        axios.delete(`http://localhost/React/Group6_React/backend/posts.php/${id}`).then(function (response) {
-            window.location.assign('/');
+        axios.delete(`http://localhost/Group6_React/backend/posts.php/${id}`).then(function (response) {
+            window.location.assign('/home');
         })
     }
 
@@ -122,7 +123,7 @@ const Index = () => {
 
 
     function getComments() {
-        axios.get(`http://localhost/React/Group6_React/backend/comments.php/`)
+        axios.get(`http://localhost/Group6_React/backend/comments.php/`)
             .then(response => {
                 setComments(response.data);
             })
@@ -131,13 +132,13 @@ const Index = () => {
     const handleCreateComment = (e) => {
         e.preventDefault();
         console.log(inputs)
-        axios.post('http://localhost/React/Group6_React/backend/comments.php/', inputs).then(
-            window.location.assign('/')
+        axios.post('http://localhost/Group6_React/backend/comments.php/', inputs).then(
+            window.location.assign('/home')
         )
     }
 
     const deleteComment = (id) => {
-        axios.delete(`http://localhost/React/Group6_React/backend/comments.php/${id}`).then(function (response) {
+        axios.delete(`http://localhost/Group6_React/backend/comments.php/${id}`).then(function (response) {
             getComments();
         })
     }
@@ -156,7 +157,7 @@ const Index = () => {
 
     const handleEditCommentSubmit = (e) => {
         e.preventDefault();
-        axios.put('http://localhost/React/Group6_React/backend/comments.php/', inputs).then(
+        axios.put('http://localhost/Group6_React/backend/comments.php/', inputs).then(
             window.location.assign('/')
         )
     }
@@ -178,6 +179,39 @@ const Index = () => {
         document.getElementById(`editCommentBTN${id}`).style.display = 'inline-block';
 
     }
+
+    // Likes
+
+
+    const getLikes = () => {
+        axios.get(`http://localhost/Group6_React/backend/likes.php/`)
+        .then(response => {
+            setLikes(response.data);
+        })
+      }
+  
+      const handleLikePost = (id) => {
+        const post_id = id;
+        const user_id = current_ID;
+        setInputs({'user_id': user_id , 'post_id' : post_id})
+      }
+  
+      const likePost = (e) => {
+        e.preventDefault();
+        console.log(inputs)
+          axios.post('http://localhost/Group6_React/backend/likes.php/' , inputs).then(
+            getPosts()
+          )
+      }
+      const removeLikePost = (e) => {
+        e.preventDefault();
+        console.log(inputs)
+          axios.post('http://localhost/Group6_React/backend/likeDelete.php/' , inputs).then(
+            getPosts()
+          )
+      }
+  
+      // Return
     return (
         <>
 
@@ -268,16 +302,16 @@ const Index = () => {
                                     </div>
                                     <div className="col-sm-12">
                                         {/* ALL POSTS */}
-                                        {posts.map((post, index) => {
+                                        {posts.map((post, index_post) => {
+                                            var flagLike = false;
                                             return (
-                                                <div className="card card-block card-stretch">
+                                                <div className="card card-block card-stretch" key={index_post}>
                                                     <div className="card-body">
                                                         <div className="user-post-data">
                                                             <div className="d-flex justify-content-between">
                                                                 {/* POST USER IMAGE */}
                                                                 <div className="me-3">
-                                                                    
-                                                                    <img className="rounded-circle img-fluid" width={'60px'} src={require(`../images/${post.image}`)} alt="" />
+                                                                    <img className="rounded-circle img-fluid" width={'60px'} src={require(`../images/${post.post_image}`)} alt="" />
                                                                 </div>
                                                                 <div className="w-100">
                                                                     <div className="d-flex justify-content-between">
@@ -421,17 +455,38 @@ const Index = () => {
 
                                                         }
                                                         {/* LIKE AND COMMENT ICON */}
-                                                        <div className="comment-area mt-3">
+                                                   
+                                                    <div className="comment-area mt-3"> 
+                                                    
+                                                        <>
                                                             <div className="d-flex justify-content-between align-items-center flex-wrap">
                                                                 <div className="like-block position-relative d-flex align-items-center">
                                                                     <div className="d-flex align-items-center">
                                                                         <div className="like-data">
                                                                             <div className="dropdown">
                                                                                 {/* BUTTON LIKE */}
-                                                                                <button className='border-0 bg-transparent'>
-                                                                                    <AiOutlineLike className='fs-3 text-light' />
-                                                                                    {/* LIKE NUMBER */}
-                                                                                </button>
+                                                                                {likes.map((like , index_like) => {
+                                                                                if (like.user_id == current_ID && like.post_id == post.post_id){
+                                                                                return ( flagLike = true )
+                                                                                }})}
+
+                                                                                {( flagLike == true ) ?
+                                                                                <form action="" onSubmit={removeLikePost}>
+                                                                                    <button className='border-0 bg-transparent' onClick={()=>handleLikePost(post.post_id)}>
+                                                                                        <AiOutlineLike className='fs-3 text-light' />
+                                                                                        <p className="mb-0" style={{color : 'blue' , fontWeight : 'bold'}}>Liked</p>
+                                                                                        {/* LIKE NUMBER */}
+                                                                                    </button>
+                                                                                </form>
+                                                                                :
+                                                                                <form action=""  onSubmit={likePost}>
+                                                                                    <button className='border-0 bg-transparent'  onClick={()=>handleLikePost(post.post_id)}>
+                                                                                        <AiOutlineLike className='fs-3 text-light' />
+                                                                                        <p className="mb-0" >Like</p>
+                                                                                        {/* LIKE NUMBER */}
+                                                                                    </button>
+                                                                                </form>
+                                                                                 }
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -448,12 +503,14 @@ const Index = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <hr />
+                                                            </>
+                                                       
+                                                                <hr />
                                                             {/* COMMENT CONTAINER */}
-                                                            {comments.map((comment, index) => {
-                                                                if (comment.post_id == post.post_id) {
+                                                            { comments.map((comment,index_comment) => {
+                                                                    if (comment.post_id == post.post_id){
                                                                     return (
-                                                                        <div className="card card-block card-stretch">
+                                                                        <div className="card card-block card-stretch" key={index_comment}>
                                                                             <div className="card-body">
                                                                                 <div className="user-post-data">
                                                                                     <div className="d-flex justify-content-between">
