@@ -82,7 +82,7 @@ const Register = () => {
 
 
                 <div className="col-md-6 bg-white pt-5 pt-5 pb-lg-0 pb-5">
-                  <div className="sign-in-from">
+                  <div style={{paddingTop: '3rem'}} className="sign-in-from  ">
 
 
                     <h1 className="mb-0">Sign Up</h1>
