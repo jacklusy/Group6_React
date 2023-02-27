@@ -38,7 +38,7 @@ import Register from "./components/main/Register";
 const App = () => {
   return (
     <>
-    <ToastContainer
+    {/* <ToastContainer
 position="top-center"
 autoClose={2000}
 hideProgressBar={false}
@@ -49,7 +49,7 @@ pauseOnFocusLoss
 draggable
 pauseOnHover
 >
-</ToastContainer>
+</ToastContainer> */}
       <Router>
 
         <Routes>

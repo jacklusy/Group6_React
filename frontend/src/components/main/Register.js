@@ -33,16 +33,14 @@ const Register = () => {
       else{
    
       //console.log(inputs);
-     axios.post('http://localhost/ReactBreef/Reactphp/log_reg.php', inputs ).then(function(response){
+     axios.post('http://localhost/React/Group6_React/backend/log_reg.php', inputs ).then(function(response){
       console.log(response.data); 
       //console.log(response); 
      })
 
     toast.success('Account Created Successfully 👌');
-     navigate('/home');
+     navigate('/');
     }}
-
-
 
 
 
@@ -157,8 +155,6 @@ const Register = () => {
                         <span className="dark-color d-inline-block line-height-2">Already Have Account ?<Link to={'/'}> Log in</Link></span>
                       </div>
                     </form>
-
-
 
                   </div>
                 </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 //import loginImg from './logo-full.png'
 
 // import 'react-toastify/dist/ReactToastify.css';
@@ -52,7 +53,7 @@ const Login = () => {
   }
   
       const getUser = ()=> {
-        axios.get('http://localhost/ReactBreef/Reactphp/log_reg.php').then(function(response){
+        axios.get('http://localhost/React/Group6_React/backend/log_reg.php').then(function(response){
             setUsers(response.data)
         })
     }
@@ -65,10 +66,6 @@ const Login = () => {
             <div className="container p-0">
               <div className="row no-gutters">
                
-
-
-
-
 
                 
                 <div className="col-md-6 bg-white pt-5 pt-5 pb-lg-0 pb-5">
