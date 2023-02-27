@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 //import loginImg from './logo-full.png'
 
-// import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Login = () => {
@@ -21,6 +21,9 @@ const Login = () => {
       useEffect(()=>{
         getUser()
     },[]);
+
+  
+
 
 
     const ProceedLogin = (e) => {
@@ -52,7 +55,7 @@ const Login = () => {
   }
   
       const getUser = ()=> {
-        axios.get('http://localhost/ReactBreef/Reactphp/log_reg.php').then(function(response){
+        axios.get('http://localhost/React/Group6_React/backend/log_reg.php').then(function(response){
             setUsers(response.data)
         })
     }

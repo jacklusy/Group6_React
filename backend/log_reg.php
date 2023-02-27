@@ -22,11 +22,11 @@ switch($method){
         $sql="SELECT * FROM users";
         $path = explode('/', $_SERVER['REQUEST_URI']); // explode exepting 2 parameters first how do you want to explode the string , then  the path
         //print_r($path);  // to show you array of the data
-        if(isset($path[4]) && is_numeric($path[4])){
+        if(isset($path[5]) && is_numeric($path[5])){
          // to see if there is an id and it is a number in index of that array
             $sql .= " WHERE id =:id";
             $db = $con->prepare($sql);
-            $db->bindValue(':id' , $path[4]);
+            $db->bindValue(':id' , $path[5]);
             $db->execute();
             $data= $db->fetch(PDO::FETCH_ASSOC);
         }else{
@@ -44,14 +44,16 @@ switch($method){
     case "POST":
         $user = json_decode(file_get_contents('php://input')); // to make php read this as an object from react
         
-        $db = crud::connect()->prepare("INSERT INTO users ( first_name, last_name, email, password, phone, image) VALUES (:first_name, :last_name ,:email, :password , :phone , NULL)");
+        $db = crud::connect()->prepare("INSERT INTO users ( first_name, last_name, email, password, phone, image , created_at) VALUES (:first_name, :last_name ,:email, :password , :phone , NULL , :created)");
         //$db->bindValue(':id' , $user->id); // to reach the name email and mobile from data 
+        $created_at = date('Y-m-d');
         $db->bindValue(':first_name' , $user->first_name); // to reach the name email and mobile from data 
         $db->bindValue(':last_name' , $user->last_name); // to reach the name email and mobile from data 
         $db->bindValue(':email' , $user->email);
         $db->bindValue(':password' , $user->password);
         $db->bindValue(':phone' , $user->phone);
-        
+        $db->bindValue(':created' , $created_at);
+
         if($db -> execute()) {
             $response = ['status' =>1, 'message'=>"Record created succcesfully"];
         }else{
