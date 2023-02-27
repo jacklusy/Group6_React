@@ -37,7 +37,7 @@ import Register from "./components/main/Register";
 
 const App = () => {
   return (
-    <>
+    <div>
     <ToastContainer
 position="top-center"
 autoClose={2000}
@@ -59,7 +59,7 @@ pauseOnHover
           <Route exact path="/Register" element={<Register />} />
 
           <Route exact path="/Profile" element={<Profile />} />
-          <Route exact path="/EditProfile" element={<EditProfile />} />
+          <Route exact path="/EditProfile/:id/edit" element={<EditProfile />} />
           <Route exact path="/ProfileForum" element={<ProfileForum />} />
 
           <Route exact path="/Group" element={<Group />} />
@@ -69,8 +69,8 @@ pauseOnHover
           <Route exact path="/Email" element={<Email />} />
         </Routes>
       </Router>
-    </>
-  )
+    </div>
+  );
 }
 
 export default App

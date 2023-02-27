@@ -6,8 +6,8 @@ class crud{
  static function connect(){
    try{
 
-   $con=new PDO('mysql:localhost=localhost;dbname=react_the_project','root','');
-   //echo 'hhhhhhhhhhhhhhhhhhh';
+   $con=new PDO('mysql:localhost=localhost;dbname=reactproject','root','');
+   // echo 'hhhhhhhhhhhhhhhhhhh';
    return $con;
  
 
@@ -17,6 +17,6 @@ class crud{
 
 
 }}}
-$con=crud::connect();
+// $con=crud::connect();
 
 ?>

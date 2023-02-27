@@ -33,13 +33,13 @@ const Register = () => {
       else{
    
       //console.log(inputs);
-     axios.post('http://localhost/ReactBreef/Reactphp/log_reg.php', inputs ).then(function(response){
+     axios.post('http://localhost/Group6_React/backend/log_reg.php', inputs ).then(function(response){
       console.log(response.data); 
       //console.log(response); 
      })
 
     toast.success('Account Created Successfully 👌');
-     navigate('/home');
+     navigate('/');
     }}
 
 

@@ -17,7 +17,7 @@ const Login = () => {
   const [users, setUsers] = useState([]);
   const [error , setError] = useState(false);
 
- 
+//  console.log(users);
       useEffect(()=>{
         getUser()
     },[]);
@@ -25,35 +25,38 @@ const Login = () => {
 
     const ProceedLogin = (e) => {
       e.preventDefault(); 
+      console.log(users,'users');
       for(const user of users){
-  
+  console.log(user.email,'email',user.password,'password');
+  // console.log();
         if(email.length===0 || password.length===0 ){
            setError(true)
         }else{
           if(user.email === email && user.password === password && Object.entries(email).length >0 && Object.entries(password).length >0){
              
-             localStorage.setItem('Id' , JSON.stringify(user.id))
-             localStorage.setItem('Email' , JSON.stringify(user.email))
-             localStorage.setItem('Password' , JSON.stringify(user.password))
-              console.log(`Welcome User`)
-              toast.success('Welcome User ❤️')
-              navigate('/home')
+             localStorage.setItem('Id' , JSON.stringify(user.id));
+             localStorage.setItem('Email' , JSON.stringify(user.email));
+             localStorage.setItem('Password' , JSON.stringify(user.password));
+              console.log(`Welcome User`);
+              toast.success('Welcome User ❤️');
+              navigate('/home');
               return;
-             } }  
+             } 
+          }  
           }
-              console.log("Wrong email or password");
-             
-              toast.error('Wrong email or password');
                
           
-          
+          console.log("Wrong email or password");
+              
+          toast.error('Wrong email or password');
      
      
   }
   
       const getUser = ()=> {
-        axios.get('http://localhost/ReactBreef/Reactphp/log_reg.php').then(function(response){
-            setUsers(response.data)
+        axios.get('http://localhost/Group6_React/backend/log_reg.php').then(function(response){
+          console.log(response.data,'ddddddddddddddd');
+            setUsers(response.data);
         })
     }
 

@@ -1,7 +1,9 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 <script src="https://kit.fontawesome.com/b56885f075.js" crossorigin="anonymous"></script>
 
 function Navbar() {
+  let id= localStorage.getItem("Id");
     return (
       <div className="iq-top-navbar">
       <div className="iq-navbar-custom">
@@ -284,7 +286,7 @@ function Navbar() {
                           </div>
                         </div>
                       </a>
-                      <a href="/EditProfile" className="iq-sub-card iq-bg-warning-hover">
+                      <Link to={`/EditProfile/${id}/edit`} className="iq-sub-card iq-bg-warning-hover">
                         <div className="d-flex align-items-center">
                           <div className="rounded card-icon bg-soft-warning">
                             <i className="ri-profile-line" />
@@ -294,7 +296,7 @@ function Navbar() {
                             <p className="mb-0 font-size-12">Modify your personal details.</p>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                         <div className="d-flex align-items-center iq-sub-card iq-bg-warning-hover right-sidebar-toggle ">
                           <div className="rounded card-icon bg-soft-info">
                             <i className="ri-account-box-line" />
