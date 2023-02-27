@@ -37,6 +37,7 @@ import Register from "./components/main/Register";
 
 
 const App = () => {
+  
   return (
     <>
       <ToastContainer
@@ -56,6 +57,7 @@ const App = () => {
       <Router>
 
         <Routes>
+          {/* <Route path="/" element={ isAuthenticated ? <HomePage  /> : <Login />} /> */}
           <Route exact path="/home" element={<Index />} />
 
           <Route exact path="/" element={<Login />} />
