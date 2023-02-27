@@ -56,7 +56,7 @@ console.log(users);
 
 
   }
-  
+
       const getUser = ()=> {
         axios.get('http://localhost/ReactBreef/Reactphp/log_reg.php').then(function(response){
             setUsers(response.data)
