@@ -10,7 +10,6 @@ class crud{
    try{
 
    $con=new PDO('mysql:localhost=localhost;dbname=react-the-project','root','');
-  
    return $con;
    
 

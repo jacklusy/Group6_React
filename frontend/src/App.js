@@ -59,7 +59,7 @@ const App = () => {
 
         <Routes>
           {/* <Route path="/" element={ isAuthenticated ? <HomePage  /> : <Login />} /> */}
-          <Route exact path="/home" element={<Index />} />
+          <Route exact path="/home" element={<Index/>} />
 
           <Route exact path="/" element={<Login />} />
           <Route exact path="/Register" element={<Register />} />
@@ -73,6 +73,8 @@ const App = () => {
 
           <Route exact path="/Chat" element={<Chat />} />
           <Route exact path="/Email" element={<Email />} />
+          <Route exact path="*" element={<Login />} />
+
         </Routes>
       </Router>
     </>
