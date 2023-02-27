@@ -21,8 +21,8 @@ class crud{
 }
 
 }
-
 }
+
 
 // crud::connect();
 ?>
