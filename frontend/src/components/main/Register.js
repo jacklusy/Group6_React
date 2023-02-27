@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 // import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Register = () => {
@@ -56,24 +57,14 @@ const Register = () => {
               <div className="row no-gutters">
                 <div className="col-md-6 text-center pt-5">
                   <div className="sign-in-detail text-white">
-                    <a className="sign-in-logo mb-5" href="#"><img src="../assets/images/logo-full.png" className="img-fluid" alt="logo" /></a>
                     <div className="sign-slider overflow-hidden ">
                       <ul className="swiper-wrapper list-inline m-0 p-0 ">
                         <li className="swiper-slide">
-                          <img src="../assets/images/login/1.png" className="img-fluid mb-4" alt="logo" />
+                          <img src="./images/send-text.png" className="img-fluid mb-4" alt="logo" />
                           <h4 className="mb-1 text-white">Find new friends</h4>
                           <p>It is a long established fact that a reader will be distracted by the readable content.</p>
                         </li>
-                        <li className="swiper-slide">
-                          <img src="../assets/images/login/2.png" className="img-fluid mb-4" alt="logo" /> 
-                          <h4 className="mb-1 text-white">Connect with the world</h4>
-                          <p>It is a long established fact that a reader will be distracted by the readable content.</p>
-                        </li>
-                        <li className="swiper-slide">
-                          <img src="../assets/images/login/3.png" className="img-fluid mb-4" alt="logo" />
-                          <h4 className="mb-1 text-white">Create new events</h4>
-                          <p>It is a long established fact that a reader will be distracted by the readable content.</p>
-                        </li>
+                        
                       </ul>
                     </div>
                   </div>
@@ -82,7 +73,7 @@ const Register = () => {
 
 
                 <div className="col-md-6 bg-white pt-5 pt-5 pb-lg-0 pb-5">
-                  <div style={{paddingTop: '3rem'}} className="sign-in-from  ">
+                  <div style={{paddingTop: '5rem'}} className="sign-in-from  ">
 
 
                     <h1 className="mb-0">Sign Up</h1>
