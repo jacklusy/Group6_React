@@ -12,10 +12,9 @@ const Index = () => {
 
     const current_Fname = JSON.parse(localStorage.getItem('first_name'));
     const current_Lname = JSON.parse(localStorage.getItem('last_name'));
-    const current_ID = JSON.parse(localStorage.getItem('id'));
+    const current_ID = JSON.parse(localStorage.getItem('Id'));
     const current_Email = JSON.parse(localStorage.getItem('email'));
 
-    console.log(current_ID);
 
     const [inputs, setInputs] = useState("")
     const [posts, setPosts] = useState([]);
@@ -31,14 +30,11 @@ const Index = () => {
     }, [])
 
 
-
-
     // Posts
 
 
-
     function getPosts() {
-        axios.get(`http://localhost/React/the_project/Project_Backend/posts.php/`)
+        axios.get(`http://localhost/React/Group6_React/backend/posts.php/`)
             .then(response => {
                 setPosts(response.data);
             })
@@ -52,10 +48,9 @@ const Index = () => {
         formData.append("post", inputs);
         formData.append("user_id", current_ID);
         formData.append("file", file);
-
         try {
             const response = await axios.post(
-                "http://localhost/React/the_project/Project_Backend/posts.php/", formData
+                "http://localhost/React/Group6_React/backend/posts.php/", formData
             );
             console.log(response.data);
             // window.location.assign('/');
@@ -103,7 +98,7 @@ const Index = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost/React/the_project/Project_Backend/postEdit.php/", formEditData
+                "http://localhost/React/Group6_React/backend/postEdit.php/", formEditData
             );
             console.log(response.data);
             window.location.assign('/');
@@ -115,7 +110,7 @@ const Index = () => {
 
 
     const deletePost = (id) => {
-        axios.delete(`http://localhost/React/the_project/Project_Backend/posts.php//${id}`).then(function (response) {
+        axios.delete(`http://localhost/React/Group6_React/backend/posts.php/${id}`).then(function (response) {
             window.location.assign('/');
         })
     }
@@ -127,7 +122,7 @@ const Index = () => {
 
 
     function getComments() {
-        axios.get(`http://localhost/React/the_project/Project_Backend/comments.php/`)
+        axios.get(`http://localhost/React/Group6_React/backend/comments.php/`)
             .then(response => {
                 setComments(response.data);
             })
@@ -136,13 +131,13 @@ const Index = () => {
     const handleCreateComment = (e) => {
         e.preventDefault();
         console.log(inputs)
-        axios.post('http://localhost/React/the_project/Project_Backend/comments.php/', inputs).then(
+        axios.post('http://localhost/React/Group6_React/backend/comments.php/', inputs).then(
             window.location.assign('/')
         )
     }
 
     const deleteComment = (id) => {
-        axios.delete(`http://localhost/React/the_project/Project_Backend/comments.php/${id}`).then(function (response) {
+        axios.delete(`http://localhost/React/Group6_React/backend/comments.php/${id}`).then(function (response) {
             getComments();
         })
     }
@@ -161,7 +156,7 @@ const Index = () => {
 
     const handleEditCommentSubmit = (e) => {
         e.preventDefault();
-        axios.put('http://localhost/React/the_project/Project_Backend/comments.php/', inputs).then(
+        axios.put('http://localhost/React/Group6_React/backend/comments.php/', inputs).then(
             window.location.assign('/')
         )
     }
@@ -281,7 +276,8 @@ const Index = () => {
                                                             <div className="d-flex justify-content-between">
                                                                 {/* POST USER IMAGE */}
                                                                 <div className="me-3">
-                                                                    {/* <img className="rounded-circle img-fluid" width={'60px'} src={require(`../images/${post.post_image}`)} alt="" /> */}
+                                                                    
+                                                                    <img className="rounded-circle img-fluid" width={'60px'} src={require(`../images/${post.image}`)} alt="" />
                                                                 </div>
                                                                 <div className="w-100">
                                                                     <div className="d-flex justify-content-between">
@@ -354,7 +350,7 @@ const Index = () => {
                                                                 {/* IMAGE POST */}
                                                                 <div className="row-span-2 row-span-md-1 justify-content-center">
                                                                     <hr />
-                                                                    {/* <img id={`imgPost${post.post_id}`}  className="img-thumnail rounded w-100" src={require(`../images/${post.post_image}`)} alt='' /> */}
+                                                                    <img id={`imgPost${post.post_id}`}  className="img-thumnail rounded w-100" src={require(`../images/${post.post_image}`)} alt='' />
                                                                 </div>
                                                             </>
                                                             :

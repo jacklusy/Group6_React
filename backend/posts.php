@@ -23,7 +23,6 @@ switch ($method) {
         echo json_encode($posts);
         break;
 
-
     case 'POST' :
 
         $text = $_POST["post"];
@@ -34,9 +33,8 @@ switch ($method) {
             $file = $_FILES["file"] ;
         }
 
-
         if($file != ""){
-            $targetDir = "../src/Components/images/";
+            $targetDir = "../frontend/src/components/images/";
             $fileName = basename($file["name"]);
             $targetPath = $targetDir . $fileName;
         

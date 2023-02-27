@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import {toast}  from 'react-toastify';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 //import loginImg from './logo-full.png'
 import 'react-toastify/dist/ReactToastify.css';
 // import {reducer as toastrReducer} from 'react-redux-toastr'
@@ -19,22 +20,21 @@ const Login = () => {
   const [error, setError] = useState(false);
 
 
+
   useEffect(() => {
     getUser()
   }, []);
 
-  
-
-
-
+console.log(users);
   const ProceedLogin = (e) => {
     e.preventDefault();
     for (const user of users) {
-
+      // if(user.password == password)
+      console.log(user.password,password)
       if (email.length === 0 || password.length === 0) {
         setError(true)
       } else {
-        if (user.email === email && user.password === password && Object.entries(email).length > 0 && Object.entries(password).length > 0) {
+        if (user.email == email && user.password == password && Object.entries(email).length > 0 && Object.entries(password).length > 0) {
 
           localStorage.setItem('Id', JSON.stringify(user.id));
           localStorage.setItem('Email', JSON.stringify(user.email));

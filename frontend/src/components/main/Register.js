@@ -46,8 +46,6 @@ const Register = () => {
 
 
 
-
-
     return (
   
         <div className="wrapper">
@@ -148,8 +146,6 @@ const Register = () => {
                         <span className="dark-color d-inline-block line-height-2">Already Have Account ?<Link to={'/'}> Log in</Link></span>
                       </div>
                     </form>
-
-
 
                   </div>
                 </div>

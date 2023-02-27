@@ -21,8 +21,8 @@ switch($method){
 
         $sql="SELECT * FROM users";
         $path = explode('/', $_SERVER['REQUEST_URI']); // explode exepting 2 parameters first how do you want to explode the string , then  the path
-        //print_r($path);  // to show you array of the data
-        if(isset($path[5]) && is_numeric($path[5])){
+        // print_r($path);  // to show you array of the data
+        if(isset($path[4]) && is_numeric($path[4])){
          // to see if there is an id and it is a number in index of that array
             $sql .= " WHERE id =:id";
             $db = $con->prepare($sql);

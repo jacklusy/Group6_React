@@ -40,7 +40,8 @@ const App = () => {
   
   return (
     <>
-      <ToastContainer
+
+      {/* <ToastContainer
         position="top-center"
         autoClose={2000}
         hideProgressBar={false}
@@ -51,14 +52,14 @@ const App = () => {
         // draggable
         // pauseOnHover
       >
-      </ToastContainer>
+      </ToastContainer> */}
 
 
       <Router>
 
         <Routes>
           {/* <Route path="/" element={ isAuthenticated ? <HomePage  /> : <Login />} /> */}
-          <Route exact path="/home" element={<Index />} />
+          <Route exact path="/home" element={<Index/>} />
 
           <Route exact path="/" element={<Login />} />
           <Route exact path="/Register" element={<Register />} />
