@@ -1,4 +1,7 @@
 <?php
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
+header("Content-Type: application/json;");
 
 
 class crud{
@@ -8,14 +11,18 @@ class crud{
 
    $con=new PDO('mysql:localhost=localhost;dbname=react-the-project','root','');
    return $con;
- 
+   
 
 }catch(PDOException $error){
 
-   echo 'the error ' . $error->getMessage();
+   echo 'Error' . $error->getMessage();
 
 
-}}}
-$con=crud::connect();
+}
 
+}
+
+}
+
+// crud::connect();
 ?>
