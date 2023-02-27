@@ -57,12 +57,11 @@ console.log(users);
 
   }
 
-  const getUser = () => {
-
-    axios.get('http://localhost/Group6_React/backend/log_reg.php').then(function (response) {
-      setUsers(response.data)
-    })
-  }
+      const getUser = ()=> {
+        axios.get('http://localhost/ReactBreef/Reactphp/log_reg.php').then(function(response){
+            setUsers(response.data)
+        })
+    }
 
   return (
 
