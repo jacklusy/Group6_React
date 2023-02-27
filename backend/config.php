@@ -7,7 +7,7 @@ class crud{
    try{
 
    $con=new PDO('mysql:localhost=localhost;dbname=react_the_project','root','');
-   //echo 'hhhhhhhhhhhhhhhhhhh';
+   // echo 'hhhhhhhhhhhhhhhhhhh';
    return $con;
  
 
