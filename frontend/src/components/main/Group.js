@@ -1,13 +1,101 @@
 import React from 'react'
+import { useState , useEffect } from 'react';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from '../body/Footer';
 import LeftSidebar from '../body/LeftSidebar';
 import RightSidebar from '../body/RightSidebar';
 import Navbar from '../body/Navbar';
+import { Link, useNavigate } from "react-router-dom";
 
 
 
 const Group = () => {
+
+
+  const current_ID = JSON.parse(localStorage.getItem('id'));
+
+  const [groups , setGroups] = useState([]);
+  const [pendingMembers,setPendingMembers] = useState([]);
+  const [acceptedMembers,setAcceptedMembers] = useState([]);
+
+
+  useEffect(()=>{
+    getGroups();
+    getPendingMempers();
+    getAcceptedMempers();
+    
+} , [])
+
+
+
+function getGroups(){
+  axios.get(`http://localhost/React/the_project/Project_Backend/groups.php/`)
+  .then(response => {
+      console.log(response.data)
+      setGroups(response.data);
+      
+  })
+}
+
+
+const AddToGroup = (groupId) => {
+  let inputs = {user_id:current_ID , group_id:groupId};
+  axios.post(`http://localhost/React/the_project/Project_Backend/membersGroup.php/save`,inputs)
+  .then((respone)=>{
+      console.log(respone.data);
+      getGroups();
+      getPendingMempers();
+      
+            // getFriendsRequest();
+  })
+}
+     //للجروبات pending لعرض كل طلبات المستخدم اللي حالتهم 
+    const getPendingMempers = () => {
+
+        axios.get(`http://localhost/React/the_project/Project_Backend/getPendingMember.php/${current_ID}`)
+        .then((respone)=>{
+            console.log(respone.data);
+            let pendingMembers = respone.data.map((ele)=>{
+                return ele.group_id
+            })
+            console.log(pendingMembers);
+            setPendingMembers(pendingMembers);
+            // setPendingMempers(respone.data)
+        })
+    }
+
+         //للجروبات accepted لعرض كل طلبات المستخدم اللي حالتهم 
+         const getAcceptedMempers = () => {
+
+          axios.get(`http://localhost/React/the_project/Project_Backend/getAcceptedMember.php/${current_ID}`)
+          .then((respone)=>{
+              console.log(respone.data);
+              let acceptedMembers = respone.data.map((ele)=>{
+                  return ele.group_id
+              })
+              console.log(acceptedMembers);
+              setAcceptedMembers(acceptedMembers);
+              // setPendingMempers(respone.data)
+          })
+      }
+
+  // لحذب طلب الاضافة 
+    const removeRequest = (GroupId) => {
+      let inputs = {user_id:current_ID , group_id:GroupId};
+      axios.put(`http://localhost/React/the_project/Project_Backend/getPendingMember.php/edit`,inputs)
+      .then((respone)=>{
+          console.log(respone.data);
+          getGroups();
+          getPendingMempers();
+      })
+
+    }
+
+
+    let i = 1;
+
+
   return (
     <>
       <Navbar />

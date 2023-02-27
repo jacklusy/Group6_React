@@ -32,6 +32,7 @@ import './assets/vendor/line-awesome/dist/font-awesome-line-awesome/css/all.min.
 import './assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css';
 import Login from "./components/main/Login";
 import Register from "./components/main/Register";
+import { ToastContainer } from "react-toastify";
 //import Login from "./components/main/Login";
 
 

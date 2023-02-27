@@ -11,6 +11,8 @@ header("Content-Type: application/json;");
 
 $method = $_SERVER['REQUEST_METHOD'];
 
+$method = $_SERVER['REQUEST_METHOD'];
+
 $con=crud::connect();
 switch ($method) {
     case 'GET' :
@@ -22,7 +24,6 @@ switch ($method) {
         $posts = $query->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($posts);
         break;
-
     case 'POST' :
 
         $text = $_POST["post"];
@@ -39,7 +40,6 @@ switch ($method) {
             $targetPath = $targetDir . $fileName;
         
             if (move_uploaded_file($file["tmp_name"], $targetPath)) {
-            echo "File uploaded successfully";
                 $sql = "INSERT INTO posts (user_id , content , post_image)
                         VALUES ( ? , ? , ? )" ;
                 $query = $con->prepare($sql);
