@@ -19,6 +19,7 @@ import Index from "./components/main/Index";
 //import Register from "./components/main/Register";
 // import Test from "./components/main/Test";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -38,18 +39,20 @@ import Register from "./components/main/Register";
 const App = () => {
   return (
     <>
-    <ToastContainer
-position="top-center"
-autoClose={2000}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover
->
-</ToastContainer>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        // pauseOnFocusLoss
+        // draggable
+        // pauseOnHover
+      >
+      </ToastContainer>
+
+
       <Router>
 
         <Routes>
